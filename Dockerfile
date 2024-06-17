@@ -1,5 +1,5 @@
 # Use OpenJDK 21 as base image
-FROM openjdk:21-jdk-alpine
+FROM alpine
 # Set working directory inside the container
 WORKDIR /app
 # Copy the executable JAR file from the host file system to the container
