@@ -16,3 +16,5 @@ steps:
     id: 'Deploy to Cloud Run'
 images:
   - 'gcr.io/$PROJECT_ID/spring-boot-app'
+options:
+  logging: CLOUD_LOGGING_ONLY
