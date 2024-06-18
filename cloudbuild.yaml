@@ -14,8 +14,10 @@ steps:
     args:
       - '-c'
       - |
-        export PATH="/usr/lib/jvm/java-21-openjdk-amd64/bin:$PATH" && \
-        java -version && \
+        JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && \
+        /usr/lib/jvm/java-21-openjdk-amd64/bin/java -version && \
+        /usr/lib/jvm/java-21-openjdk-amd64/bin/javac -version && \
+        export PATH=$JAVA_HOME/bin:$PATH && \
         gradle clean bootJar
     id: 'Build JAR'
 
