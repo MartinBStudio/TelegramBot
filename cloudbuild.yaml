@@ -5,17 +5,18 @@ steps:
       - '-c'
       - |
         apt-get update && \
-        apt-get install -y openjdk-11-jdk && \
-        update-java-alternatives -s java-1.11.0-openjdk-amd64
-    id: 'Setup JDK 11'
+        apt-get install -y openjdk-21-jdk && \
+        update-java-alternatives -s java-1.21.0-openjdk-amd64
+    id: 'Setup JDK 21'
 
   - name: 'gcr.io/cloud-builders/gradle'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 && \
+        export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && \
         export PATH=$JAVA_HOME/bin:$PATH && \
+        java -version && \
         gradle clean bootJar
     id: 'Build JAR'
 
