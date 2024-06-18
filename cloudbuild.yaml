@@ -1,6 +1,7 @@
 steps:
   - name: 'ubuntu'
-    args: ['bash', '-c', 'apt-get update && apt-get install -y openjdk-21-jdk && update-java-alternatives -s java-1.21.0-openjdk-amd64']
+    entrypoint: 'bash'
+    args: ['-c', 'apt-get update && apt-get install -y openjdk-21-jdk && update-java-alternatives -s java-1.21.0-openjdk-amd64']
     id: 'Setup JDK 21'
 
   - name: 'gcr.io/cloud-builders/gradle'
@@ -12,4 +13,14 @@ steps:
     id: 'Build Docker Image'
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/spring
+    args: ['push', 'gcr.io/$PROJECT_ID/spring-boot-app']
+    id: 'Push Docker Image'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['run', 'deploy', 'spring-boot-app', '--image', 'gcr.io/$PROJECT_ID/spring-boot-app', '--platform', 'managed', '--region', 'us-central1']
+    id: 'Deploy to Cloud Run'
+
+images:
+  - 'gcr.io/$PROJECT_ID/spring-boot-app'
+options:
+  logging: CLOUD_LOGGING_ONLY
