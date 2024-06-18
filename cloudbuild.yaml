@@ -1,15 +1,11 @@
 steps:
-  - name: 'gcr.io/cloud-builders/gradle'
+  - name: 'ubuntu'
     entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        apt-get update && \
-        apt-get install -y openjdk-22-jdk && \
-        update-java-alternatives -s java-1.22.0-openjdk-amd64 && \
-        export JAVA_HOME=/usr/lib/jvm/java-22-openjdk-amd64 && \
-        export PATH=$JAVA_HOME/bin:$PATH && \
-        gradle clean bootJar
+    args: ['-c', 'apt-get update && apt-get install -y openjdk-21-jdk && update-java-alternatives -s java-1.21.0-openjdk-amd64']
+    id: 'Setup JDK 21'
+
+  - name: 'gcr.io/cloud-builders/gradle'
+    args: ['clean', 'bootJar']
     id: 'Build JAR'
 
   - name: 'gcr.io/cloud-builders/docker'
