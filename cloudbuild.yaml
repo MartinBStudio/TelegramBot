@@ -1,6 +1,10 @@
 steps:
+  - name: 'ubuntu'
+    entrypoint: 'bash'
+    id: 'Setup JDK 21'
+
   - name: 'gcr.io/cloud-builders/gradle'
-    args: ['clean', 'bootJar']
+    entrypoint: 'bash'
     id: 'Build JAR'
 
   - name: 'gcr.io/cloud-builders/docker'
