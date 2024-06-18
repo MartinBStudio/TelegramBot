@@ -1,8 +1,8 @@
 steps:
   - name: 'ubuntu'
     entrypoint: 'bash'
-    args: ['-c', 'apt-get update && apt-get install -y openjdk-21-jdk && update-java-alternatives -s java-1.21.0-openjdk-amd64']
-    id: 'Setup JDK 21'
+    args: ['-c', 'apt-get update && apt-get install -y openjdk-22-jdk && update-java-alternatives -s java-1.22.0-openjdk-amd64']
+    id: 'Setup JDK 22'
 
   - name: 'gcr.io/cloud-builders/gradle'
     args: ['clean', 'bootJar']
