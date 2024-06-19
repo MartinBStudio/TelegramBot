@@ -39,7 +39,7 @@ steps:
       - '--platform'
       - 'managed'
       - '--region'
-      - 'us-central1'
+      - 'europe-west3'
     id: 'Deploy to Cloud Run'
 
 images:
