@@ -1,5 +1,5 @@
 steps:
-  - name: 'openjdk:21-jdk-slim'
+  - name: 'ubuntu'
     id: 'Setup JDK 21'
     entrypoint: 'bash'
     args: ['-c', 'echo "JDK 21 setup complete"']
