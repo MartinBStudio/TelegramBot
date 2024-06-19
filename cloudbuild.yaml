@@ -1,23 +1,43 @@
 steps:
-  - name: 'ubuntu'
+  - name: 'openjdk:21-jdk-slim'
     entrypoint: 'bash'
-    id: 'Setup JDK 21'
-    args: ['-c', 'apt-get update && apt-get install -y openjdk-21-jdk']
-
-  - name: 'gcr.io/cloud-builders/gradle'
-    args: ['build']
-    id: 'Build JAR'
+    args:
+      - '-c'
+      - |
+        apt-get update && apt-get install -y wget unzip
+        wget https://services.gradle.org/distributions/gradle-7.5-bin.zip
+        unzip gradle-7.5-bin.zip -d /opt
+        ln -s /opt/gradle-7.5/bin/gradle /usr/bin/gradle
+        gradle -v
+        ./gradlew build --no-daemon
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/spring-boot-app', '-f', 'Dockerfile', '.']
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/spring-boot-app'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
     id: 'Build Docker Image'
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/spring-boot-app']
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/spring-boot-app'
     id: 'Push Docker Image'
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['run', 'deploy', 'spring-boot-app', '--image', 'gcr.io/$PROJECT_ID/spring-boot-app', '--platform', 'managed', '--region', 'us-central1']
+    args:
+      - 'run'
+      - 'deploy'
+      - 'spring-boot-app'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/spring-boot-app'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'us-central1'
     id: 'Deploy to Cloud Run'
 
 images:
