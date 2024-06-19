@@ -1,14 +1,11 @@
 steps:
   - name: 'ubuntu'
-    id: 'Setup JDK 21'
     entrypoint: 'bash'
-    args: ['-c', 'echo "JDK 21 setup complete"']
+    id: 'Setup JDK 21'
 
   - name: 'gcr.io/cloud-builders/gradle'
-    args: ['build']
+    entrypoint: 'bash'
     id: 'Build JAR'
-    env:
-      - 'GRADLE_USER_HOME=/workspace/.gradle'
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/spring-boot-app', '-f', 'Dockerfile', '.']
