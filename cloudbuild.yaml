@@ -2,9 +2,10 @@ steps:
   - name: 'ubuntu'
     entrypoint: 'bash'
     id: 'Setup JDK 21'
+    args: ['-c', 'apt-get update && apt-get install -y openjdk-21-jdk']
 
   - name: 'gcr.io/cloud-builders/gradle'
-    entrypoint: 'bash'
+    args: ['build']
     id: 'Build JAR'
 
   - name: 'gcr.io/cloud-builders/docker'
