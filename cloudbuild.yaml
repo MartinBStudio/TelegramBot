@@ -30,4 +30,18 @@ steps:
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
-      - 'run
+      - 'run'
+      - 'deploy'
+      - 'spring-boot-app'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/spring-boot-app'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'us-central1'
+    id: 'Deploy to Cloud Run'
+
+images:
+  - 'gcr.io/$PROJECT_ID/spring-boot-app'
+options:
+  logging: CLOUD_LOGGING_ONLY
