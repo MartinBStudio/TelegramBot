@@ -10,6 +10,7 @@ steps:
         ln -s /opt/gradle-7.5/bin/gradle /usr/bin/gradle
         chmod +x /usr/bin/gradle
         gradle -v
+        chmod +x gradlew   # Ensure gradlew is executable
         ./gradlew build --no-daemon
 
   - name: 'gcr.io/cloud-builders/docker'
