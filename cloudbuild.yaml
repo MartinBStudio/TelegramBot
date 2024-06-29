@@ -40,8 +40,6 @@ steps:
       - 'managed'
       - '--region'
       - 'europe-west3'
-      - '--set-env-vars'
-      - 'PORT=5000'
     id: 'Deploy to Cloud Run'
 
 images:
