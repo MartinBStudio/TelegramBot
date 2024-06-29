@@ -40,6 +40,7 @@ steps:
       - 'managed'
       - '--region'
       - 'europe-west3'
+      - '--vpc-connector=hookapp'
     id: 'Deploy to Cloud Run'
 
 images:
