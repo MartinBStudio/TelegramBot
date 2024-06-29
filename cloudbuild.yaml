@@ -17,7 +17,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/hook-app-be'  # Updated image tag to use 'hook-app-be'
+      - 'gcr.io/$PROJECT_ID/hookapp-be'  # Updated image tag to use 'hook-app-be'
       - '-f'
       - 'Dockerfile'
       - '.'
@@ -26,7 +26,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/hook-app-be'  # Updated image tag to use 'hook-app-be'
+      - 'gcr.io/$PROJECT_ID/hookapp-be'  # Updated image tag to use 'hook-app-be'
     id: 'Push Docker Image'
 
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -35,7 +35,7 @@ steps:
       - 'deploy'
       - 'hook-app-be'  # Updated service name to 'hook-app-be'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/hook-app-be'  # Updated image tag to use 'hook-app-be'
+      - 'gcr.io/$PROJECT_ID/hookapp-be'  # Updated image tag to use 'hook-app-be'
       - '--platform'
       - 'managed'
       - '--region'
@@ -43,6 +43,6 @@ steps:
     id: 'Deploy to Cloud Run'
 
 images:
-  - 'gcr.io/$PROJECT_ID/hook-app-be'  # Updated image tag to use 'hook-app-be'
+  - 'gcr.io/$PROJECT_ID/hookapp-be'  # Updated image tag to use 'hook-app-be'
 options:
   logging: CLOUD_LOGGING_ONLY
