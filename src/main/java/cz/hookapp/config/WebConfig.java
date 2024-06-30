@@ -20,7 +20,8 @@ public class WebConfig {
                         .allowedOrigins(
                                 "https://localhost:8080",
                                 "https://localhost:3000",
-                                "https://hookapp.eu:8080")
+                                "http://hookapp-fe:80"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true);
