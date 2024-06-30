@@ -18,8 +18,8 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                                "https://localhost:3000",
-                                "http://hookapp-fe:80"
+                                "http://localhost:3000",
+                                "http://hookapp-fe:8080"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
