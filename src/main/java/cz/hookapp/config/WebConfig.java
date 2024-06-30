@@ -19,8 +19,8 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 "http://localhost:3000",
-                                "http://hookapp-fe:8080",
-                                "http://hookapp.eu:8080"
+                                "http://hookapp-fe",
+                                "http://hookapp.eu"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
