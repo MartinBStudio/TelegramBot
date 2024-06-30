@@ -57,6 +57,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hookapp-be:latest
-            docker stop your-container-name || true
-            docker rm your-container-name || true
+            docker stop hookapp-be || true
+            docker rm hookapp-be || true
             docker run -d --name hookapp-be -p 5000:5000 ${{ secrets.DOCKERHUB_USERNAME }}/hookapp-be:latest
