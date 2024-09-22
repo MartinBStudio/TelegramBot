@@ -1,6 +1,7 @@
 package cz.raadost.service;
 
-import cz.raadost.model.ContentData;
+import cz.raadost.dataSource.ContentEntity;
+import cz.raadost.dataSource.ContentService;
 import cz.raadost.model.StaticMessages;
 import org.jvnet.hk2.annotations.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +16,17 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Service
 @PropertySource("classpath:telegram.properties")
 public class Messanger extends TelegramLongPollingBot {
+    private final ContentService contentService;
 
     private final Long NOTIFICATION_CHANNEL_ID;
     private final String BOT_TOKEN;
     private final String BOT_USERNAME;
     @Autowired
     public Messanger(
-            @Value("${telegram.bot.notification.channel.id}") Long NOTIFICATION_CHANNEL_ID,
+            ContentService contentService, @Value("${telegram.bot.notification.channel.id}") Long NOTIFICATION_CHANNEL_ID,
             @Value("${telegram.bot.token}") String BOT_TOKEN,
             @Value("${telegram.bot.username}") String BOT_USERNAME) {
+        this.contentService = contentService;
         this.NOTIFICATION_CHANNEL_ID = NOTIFICATION_CHANNEL_ID;
         this.BOT_TOKEN = BOT_TOKEN;
         this.BOT_USERNAME = BOT_USERNAME;
@@ -71,7 +74,7 @@ public class Messanger extends TelegramLongPollingBot {
     }
     private void handleNumberMessage(String messageText, Long chatId, User user) {
         int messageNumber = Integer.parseInt(messageText);
-        if (messageNumber <= ContentData.values().length) {
+        if (messageNumber <= contentService.findAll().size()) {
             sendMessage(chatId, buildContentMessageFronStringIndex(String.valueOf(messageNumber), user.getId()));
         } else {
             sendMessage(chatId, StaticMessages.CONTENT_OUT_OF_BOUNDS.getMessage());
@@ -81,10 +84,10 @@ public class Messanger extends TelegramLongPollingBot {
         String numberString = messageText.replaceAll("[^0-9]", "");
         int number = Integer.parseInt(numberString);
 
-        if (number <= ContentData.values().length) {
-            var data = ContentData.findByStringNumber(String.valueOf(number));
+        if (number <= contentService.findAll().size()) {
+            var data = contentService.findById(number);
             String channelMessageText = String.format("Uživatel - @%s\nObsah - [%s] %s\nČástka - %sCZK\nPoznámka k platbě - %s\n\nOvěř platbu a uživatele kontaktuj!",
-                    user.getFirstName()+user.getLastName(), data.getIndex(), data.getName() ,data.getPrice(), user.getId());
+                    user.getFirstName()+user.getLastName(), data.getContentIndex(), data.getName() ,data.getPrice(), user.getId());
             sendMessage(NOTIFICATION_CHANNEL_ID, channelMessageText);
             sendMessage(chatId, StaticMessages.THANKS_MESSAGE.getMessage());
         }
@@ -92,17 +95,17 @@ public class Messanger extends TelegramLongPollingBot {
     private String buildAllContentListMessage(){
         StringBuilder sb = new StringBuilder();
         sb.append("Vyber si kliknutím na číslo:\n\n");
-        for(ContentData data:ContentData.values()){
-            sb.append(String.format("/%s - %s - %s CZK\n",data.getIndex(),data.getName(),data.getPrice()));
+        for(ContentEntity data:contentService.findAll()){
+            sb.append(String.format("/%s - %s - %s CZK\n",data.getContentIndex(),data.getName(),data.getPrice()));
         }
 
 
         return sb.toString();
     }
     private String buildContentMessageFronStringIndex(String index,Long userId){
-        var selectedData = ContentData.findByStringNumber(index);
+        var selectedData = contentService.findById(Long.parseLong(index));
         var contentSelected = StaticMessages.CONTENT_SELECTED.getMessage();
-        var contentIndex = selectedData.getIndex();
+        var contentIndex = selectedData.getContentIndex();
         var contentName = selectedData.getName();
         var contentType = selectedData.getType();
         var contentDescription = selectedData.getDescription();

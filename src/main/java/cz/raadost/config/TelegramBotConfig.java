@@ -1,7 +1,9 @@
 package cz.raadost.config;
 
+import cz.raadost.dataSource.ContentService;
 import cz.raadost.service.Messanger;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +15,9 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Configuration
 @PropertySource("classpath:telegram.properties")
+@RequiredArgsConstructor
 public class TelegramBotConfig {
+    private final ContentService contentService;
     @Bean
     public TelegramBotsApi telegramBotsApi() {
         try {
@@ -31,7 +35,7 @@ public class TelegramBotConfig {
     private String BOT_USERNAME;
     @Bean
     public Messanger messanger(TelegramBotsApi telegramBotsApi) {
-        Messanger messanger = new Messanger(NOTIFICATION_CHANNEL_ID, BOT_TOKEN, BOT_USERNAME);
+        Messanger messanger = new Messanger(contentService,NOTIFICATION_CHANNEL_ID, BOT_TOKEN, BOT_USERNAME);
         try {
             telegramBotsApi.registerBot(messanger);
         } catch (TelegramApiException e) {
