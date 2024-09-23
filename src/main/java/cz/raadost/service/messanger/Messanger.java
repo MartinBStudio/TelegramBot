@@ -7,6 +7,7 @@ import cz.raadost.service.content.ContentEntity;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@Slf4j
 @Service
 @PropertySource("classpath:telegram.properties")
 @RequiredArgsConstructor
 public class Messanger extends TelegramLongPollingBot {
 
-  private final Content content;
+  protected final Content content;
 
   @Value("${telegram.bot.notification.channel.id}")
   private Long NOTIFICATION_CHANNEL_ID;
@@ -31,6 +33,9 @@ public class Messanger extends TelegramLongPollingBot {
 
   @Value("${telegram.bot.username}")
   private String BOT_USERNAME;
+
+  @Value("#{'${telegram.bot.admin.users.list}'.split(',')}")
+  private List<String> adminUsers;
 
   @Override
   public String getBotToken() {
@@ -42,56 +47,74 @@ public class Messanger extends TelegramLongPollingBot {
     return BOT_USERNAME;
   }
 
+
+
   @Override
   public void onUpdateReceived(Update update) {
     if (update.hasMessage() && update.getMessage().hasText()) {
       String messageText = update.getMessage().getText();
       Long chatId = update.getMessage().getChatId();
       User user = update.getMessage().getFrom();
-
+      // ADMIN
+      if (isAdmin(user.getUserName())) {
+        handleCustomAdminMessages(messageText, chatId, user);
+      }
+      // ANY USER
       switch (messageText) {
         case START_COMMAND:
           sendMessage(chatId, StaticMessages.WELCOME.getMessage());
           break;
-
         case ALL_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildContentListMessage(chatId, "");
+          sendContentListMessage(chatId, "");
           break;
         case VIDEO_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildContentListMessage(chatId, "Video");
+          sendContentListMessage(chatId, "Video");
           break;
         case SPECIAL_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildContentListMessage(chatId, "Special");
+          sendContentListMessage(chatId, "Special");
           break;
         case BUNDLE_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildContentListMessage(chatId, "Bundle");
+          sendContentListMessage(chatId, "Bundle");
           break;
         default:
-          handleCustomMessages(messageText, chatId, user);
+          handleCustomUserMessages(messageText, chatId, user);
           break;
       }
     }
   }
+  private boolean isAdmin(String userName) {
+    return adminUsers.contains(userName);
+  }
+  //ADMIN
+  private void handleCustomAdminMessages(String messageText, Long chatId, User user) {
+    if (isRemoveCommand(messageText)) {
+      var operationMessage = content.remove(getLongFromString(messageText));
+      sendMessage(chatId, operationMessage);
+      return;
+    }
+  }
 
-  private void handleCustomMessages(String messageText, Long chatId, User user) {
+  // USER
+  private void handleCustomUserMessages(String messageText, Long chatId, User user) {
     if (isNumberCommand(messageText)) {
-      handleNumberMessage(messageText, chatId, user);
+      sendSpecificContentMessage(messageText, chatId, user);
       return;
     }
     if (isPaidCommand(messageText)) {
-      handleUserPaidMessage(messageText, chatId, user);
+      sendUserPaidMessage(messageText, chatId, user);
       return;
     }
+    if(!isAdmin(user.getUserName())) {
     sendMessage(chatId, StaticMessages.INVALID_REQUEST.getMessage());
+    }
   }
 
-
-  private void handleNumberMessage(String messageText, Long chatId, User user) {
-    int messageNumber = getNumberFromString(messageText);
+  private void sendSpecificContentMessage(String messageText, Long chatId, User user) {
+    int messageNumber = getIntegerFromString(messageText);
     if (content.findById(messageNumber) != null) {
       sendMessage(
           chatId, buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()));
@@ -100,8 +123,8 @@ public class Messanger extends TelegramLongPollingBot {
     }
   }
 
-  private void handleUserPaidMessage(String messageText, Long chatId, User user) {
-    var requestedData = content.findById(getNumberFromString(messageText));
+  private void sendUserPaidMessage(String messageText, Long chatId, User user) {
+    var requestedData = content.findById(getIntegerFromString(messageText));
     if (requestedData != null) {
       var data = requestedData;
       String username = user.getUserName();
@@ -126,7 +149,7 @@ public class Messanger extends TelegramLongPollingBot {
     }
   }
 
-  private void buildContentListMessage(Long chatId, String filter) {
+  private void sendContentListMessage(Long chatId, String filter) {
     List<ContentEntity> content = this.content.getData(filter);
     int batchSize = 30; // Maximum number of items per message
     List<List<ContentEntity>> batches = new ArrayList<>();
@@ -150,7 +173,6 @@ public class Messanger extends TelegramLongPollingBot {
   private String buildContentMessageFromStringIndex(String index, Long userId) {
     var selectedData = content.findById(Long.parseLong(index));
     var contentSelected = StaticMessages.CONTENT_SELECTED.getMessage();
-
     var contentName = selectedData.getName();
     var contentType = selectedData.getType();
     var contentDescription = selectedData.getDescription();
@@ -172,6 +194,7 @@ public class Messanger extends TelegramLongPollingBot {
         paymentGuide,
         paymentCommand);
   }
+  // ADMIN
 
   private void sendMessage(Long chatId, String messageText) {
     SendMessage message = new SendMessage();
