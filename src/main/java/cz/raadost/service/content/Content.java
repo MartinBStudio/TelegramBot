@@ -1,4 +1,4 @@
-package cz.raadost.dataSource;
+package cz.raadost.service.content;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ContentService {
+public class Content {
 
   private final ContentRepository contentRepository;
 

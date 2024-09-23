@@ -1,14 +1,15 @@
-package cz.raadost.service;
+package cz.raadost.service.messanger;
 
-import cz.raadost.dataSource.ContentEntity;
-import cz.raadost.dataSource.ContentService;
-import cz.raadost.model.StaticMessages;
+import static cz.raadost.service.messanger.Commands.*;
+
+import cz.raadost.service.content.Content;
+import cz.raadost.service.content.ContentEntity;
 import java.util.ArrayList;
 import java.util.List;
-import org.jvnet.hk2.annotations.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,24 +18,19 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
 @PropertySource("classpath:telegram.properties")
+@RequiredArgsConstructor
 public class Messanger extends TelegramLongPollingBot {
-  private final ContentService contentService;
 
-  private final Long NOTIFICATION_CHANNEL_ID;
-  private final String BOT_TOKEN;
-  private final String BOT_USERNAME;
+  private final Content content;
 
-  @Autowired
-  public Messanger(
-      ContentService contentService,
-      @Value("${telegram.bot.notification.channel.id}") Long NOTIFICATION_CHANNEL_ID,
-      @Value("${telegram.bot.token}") String BOT_TOKEN,
-      @Value("${telegram.bot.username}") String BOT_USERNAME) {
-    this.contentService = contentService;
-    this.NOTIFICATION_CHANNEL_ID = NOTIFICATION_CHANNEL_ID;
-    this.BOT_TOKEN = BOT_TOKEN;
-    this.BOT_USERNAME = BOT_USERNAME;
-  }
+  @Value("${telegram.bot.notification.channel.id}")
+  private Long NOTIFICATION_CHANNEL_ID;
+
+  @Value("${telegram.bot.token}")
+  private String BOT_TOKEN;
+
+  @Value("${telegram.bot.username}")
+  private String BOT_USERNAME;
 
   @Override
   public String getBotToken() {
@@ -54,27 +50,26 @@ public class Messanger extends TelegramLongPollingBot {
       User user = update.getMessage().getFrom();
 
       switch (messageText) {
-        case "/start":
+        case START_COMMAND:
           sendMessage(chatId, StaticMessages.WELCOME.getMessage());
           break;
 
-        case "/all":
+        case ALL_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildAllContentListMessage(chatId, "");
+          buildContentListMessage(chatId, "");
           break;
-        case "/video":
+        case VIDEO_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildAllContentListMessage(chatId, "Video");
+          buildContentListMessage(chatId, "Video");
           break;
-        case "/special":
+        case SPECIAL_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildAllContentListMessage(chatId, "Special");
+          buildContentListMessage(chatId, "Special");
           break;
-        case "/bundle":
+        case BUNDLE_COMMAND:
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
-          buildAllContentListMessage(chatId, "Bundle");
+          buildContentListMessage(chatId, "Bundle");
           break;
-
         default:
           handleCustomMessages(messageText, chatId, user);
           break;
@@ -83,33 +78,32 @@ public class Messanger extends TelegramLongPollingBot {
   }
 
   private void handleCustomMessages(String messageText, Long chatId, User user) {
-    if (messageText.matches("/\\d+")) { // Check if the message contains only digits
-      String numberPart = messageText.substring(1);
-      handleNumberMessage(numberPart, chatId, user);
-    } else if (messageText.matches(
-        "/ZAPLACENO\\d+")) { // Check if the message is "ZAPLACENO" followed by a number
-      handleUserPaidMessage(messageText, chatId, user);
-    } else {
-      sendMessage(chatId, StaticMessages.INVALID_REQUEST.getMessage());
+    if (isNumberCommand(messageText)) {
+      handleNumberMessage(messageText, chatId, user);
+      return;
     }
+    if (isPaidCommand(messageText)) {
+      handleUserPaidMessage(messageText, chatId, user);
+      return;
+    }
+    sendMessage(chatId, StaticMessages.INVALID_REQUEST.getMessage());
   }
 
+
   private void handleNumberMessage(String messageText, Long chatId, User user) {
-    int messageNumber = Integer.parseInt(messageText);
-    if (messageNumber <= contentService.findAll().size()) {
+    int messageNumber = getNumberFromString(messageText);
+    if (content.findById(messageNumber) != null) {
       sendMessage(
-          chatId, buildContentMessageFronStringIndex(String.valueOf(messageNumber), user.getId()));
+          chatId, buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()));
     } else {
       sendMessage(chatId, StaticMessages.CONTENT_OUT_OF_BOUNDS.getMessage());
     }
   }
 
   private void handleUserPaidMessage(String messageText, Long chatId, User user) {
-    String numberString = messageText.replaceAll("[^0-9]", "");
-    int number = Integer.parseInt(numberString);
-
-    if (number <= contentService.findAll().size()) {
-      var data = contentService.findById(number);
+    var requestedData = content.findById(getNumberFromString(messageText));
+    if (requestedData != null) {
+      var data = requestedData;
       String username = user.getUserName();
       var operatorActionMessage = StaticMessages.CONTACT_USER.getMessage();
       if (username == null) {
@@ -132,8 +126,8 @@ public class Messanger extends TelegramLongPollingBot {
     }
   }
 
-  private void buildAllContentListMessage(Long chatId, String filter) {
-    List<ContentEntity> content = contentService.getData(filter);
+  private void buildContentListMessage(Long chatId, String filter) {
+    List<ContentEntity> content = this.content.getData(filter);
     int batchSize = 30; // Maximum number of items per message
     List<List<ContentEntity>> batches = new ArrayList<>();
     // Split the content into batches
@@ -153,8 +147,8 @@ public class Messanger extends TelegramLongPollingBot {
     }
   }
 
-  private String buildContentMessageFronStringIndex(String index, Long userId) {
-    var selectedData = contentService.findById(Long.parseLong(index));
+  private String buildContentMessageFromStringIndex(String index, Long userId) {
+    var selectedData = content.findById(Long.parseLong(index));
     var contentSelected = StaticMessages.CONTENT_SELECTED.getMessage();
 
     var contentName = selectedData.getName();
@@ -164,7 +158,7 @@ public class Messanger extends TelegramLongPollingBot {
     var paymentDetails = StaticMessages.PAYMENT_DETAILS.getMessage();
     var paymentGuide = StaticMessages.PAYMENT_GUIDE.getMessage();
 
-    var paymentCommand = "/ZAPLACENO" + selectedData.getContentIndex();
+    var paymentCommand = "/ZAPLACENO_" + selectedData.getContentIndex();
 
     return String.format(
         " %s\n\n%s\n DRUH - %s\n POPIS - %s\n CENA - %sCZK\n\n %s %s\n\n%s%s",
