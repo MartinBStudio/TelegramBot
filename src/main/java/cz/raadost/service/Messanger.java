@@ -70,6 +70,10 @@ public class Messanger extends TelegramLongPollingBot {
           sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
           buildAllContentListMessage(chatId, "Special");
           break;
+        case "/bundle":
+          sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
+          buildAllContentListMessage(chatId, "Bundle");
+          break;
 
         default:
           handleCustomMessages(messageText, chatId, user);

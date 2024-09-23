@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum StaticMessages {
-    WELCOME("Ahoj, děkujeme ti za zájem o náš amatérský obsah.\nVyber si o jaký druh obsahu máš zájem:\n /video - naše amatérská videa\n /special - videa a fotky na přání jen pro tebe "),
+    WELCOME("Ahoj, děkujeme ti za zájem o náš amatérský obsah.\nVyber si o jaký druh obsahu máš zájem:\n /video - naše amatérská videa\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí "),
     CONTENT_SELECTED("Vybral jsi následující obsah: "),
     PAYMENT_DETAILS("PLATBA \n BÚ - 3064826016/3030\n Revolut - kocicka1\n Poznámka k platbě - "),
     CONTENT_OUT_OF_BOUNDS("Obsah s takovým indexem není k dispozici, pro dostupný obsah napiš /obsah"),
