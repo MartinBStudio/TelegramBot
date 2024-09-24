@@ -13,11 +13,13 @@ public class Commands {
   public static final String VIDEO_COMMAND = "/video";
   public static final String SPECIAL_COMMAND = "/special";
   public static final String BUNDLE_COMMAND = "/bundle";
+  public static final String PHOTOS_COMMAND = "/photos";
   public static final String NUMBER_COMMAND = "/(\\d+)";
   // ADMIN
   public static final String REMOVE_CONTENT_COMMAND = "/REMOVE_(\\d+)";
   public static final String DISPLAY_CONTENT_COMMAND = "/DISPLAY_(\\d+)";
   public static final String EDIT_CONTENT_COMMAND = "/EDIT_(\\d+)_\\[(.*?)\\]";
+  public static final String UPDATE_BOT_DETAILS_COMMAND = "/EDIT_BOT_DETAILS_\\[(.*?)\\]";
 
   public static final String ADD_CONTENT_COMMAND = "/ADD_\\[.*\\]";
 
@@ -55,6 +57,9 @@ public class Commands {
   public static boolean isEditCommand(String messageText) {
     return messageText.matches(EDIT_CONTENT_COMMAND);
   }
+  public static boolean isUpdateBotDetailsCommand(String messageText) {
+    return messageText.matches(UPDATE_BOT_DETAILS_COMMAND);
+  }
 
   public static boolean isAddCommand(String messageText) {
     return messageText.matches(ADD_CONTENT_COMMAND);
@@ -82,6 +87,19 @@ public class Commands {
     if (matcher.find()) {
       // Extract index and payload
       return matcher.group(2);
+    }
+    return null;
+  }
+  public static String extractPayloadFromEditBotRequest(String command) {
+    // Regular expression to match the command format
+    String regex = UPDATE_BOT_DETAILS_COMMAND;
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(command);
+
+    // Check if the command matches the regex
+    if (matcher.find()) {
+      // Extract index and payload
+      return matcher.group(1);
     }
     return null;
   }

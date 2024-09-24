@@ -22,7 +22,6 @@ public class ContentEntity {
   @SequenceGenerator(name = CONTENT_SEQ, sequenceName = CONTENT_SEQ, allocationSize = 1)
   private Long id;
 
-  private int contentIndex;
   private String name;
   private String type;
   private String subType;
