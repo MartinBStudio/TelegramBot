@@ -1,17 +1,16 @@
 package cz.raadost.service.messanger;
 
 import static cz.raadost.service.messanger.Commands.*;
-import static cz.raadost.service.messanger.StaticMessages.NO_USERNAME_MESSAGE;
 
 import cz.raadost.service.content.Content;
 import cz.raadost.service.content.ContentEntity;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.raadost.service.localization.Localization;
 import cz.raadost.service.owner.Bot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -26,8 +25,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @RequiredArgsConstructor
 public class Messanger extends TelegramLongPollingBot {
 
-  protected final Content content;
-  protected final Bot bot;
+  private final Content content;
+  private final Bot bot;
+  private final Localization localization;
 
 
   @Override
@@ -48,6 +48,7 @@ public class Messanger extends TelegramLongPollingBot {
       String messageText = update.getMessage().getText();
       Long chatId = update.getMessage().getChatId();
       User user = update.getMessage().getFrom();
+      log.info(user.toString());
       // ADMIN
       if (isAdmin(user.getUserName())) {
         handleCustomAdminMessages(messageText, chatId, user);
@@ -58,26 +59,26 @@ public class Messanger extends TelegramLongPollingBot {
           sendMessage(chatId, String.valueOf(isAdmin(user.getUserName())));
           break;
         case START_COMMAND:
-          sendMessage(chatId, StaticMessages.WELCOME.getMessage());
+          sendMessage(chatId, localization.getWelcome());
           break;
         case ALL_COMMAND:
-          sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
+          sendMessage(chatId, localization.getPickContent());
           sendContentListMessage(chatId, "");
           break;
         case VIDEO_COMMAND:
-          sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
+          sendMessage(chatId, localization.getPickContent());
           sendContentListMessage(chatId, "Video");
           break;
         case SPECIAL_COMMAND:
-          sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
+          sendMessage(chatId, localization.getPickContent());
           sendContentListMessage(chatId, "Special");
           break;
         case BUNDLE_COMMAND:
-          sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
+          sendMessage(chatId, localization.getPickContent());
           sendContentListMessage(chatId, "Bundle");
           break;
         case PHOTOS_COMMAND:_COMMAND:
-          sendMessage(chatId, StaticMessages.PICK_CONTENT.getMessage());
+          sendMessage(chatId, localization.getPickContent());
           sendContentListMessage(chatId, "Photo");
           break;
         default:
@@ -133,7 +134,7 @@ public class Messanger extends TelegramLongPollingBot {
       return;
     }
     if(!isAdmin(user.getUserName())) {
-    sendMessage(chatId, StaticMessages.INVALID_REQUEST.getMessage());
+    sendMessage(chatId, localization.getInvalidRequest());
     }
   }
 
@@ -143,7 +144,7 @@ public class Messanger extends TelegramLongPollingBot {
       sendMessage(
           chatId, buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()),true);
     } else {
-      sendMessage(chatId, StaticMessages.CONTENT_OUT_OF_BOUNDS.getMessage());
+      sendMessage(chatId, localization.getContentOutOfBounds());
     }
   }
 
@@ -152,14 +153,14 @@ public class Messanger extends TelegramLongPollingBot {
     if (requestedData != null) {
       var data = requestedData;
       String username = user.getUserName();
-      var operatorActionMessage = StaticMessages.CONTACT_USER.getMessage();
+      var operatorActionMessage = localization.getContactUser();
       if (username == null) {
         var userToContact = bot.getBotEntity().getAdminUsers().get(0);
-        var message = String.format(NO_USERNAME_MESSAGE.getMessage(),userToContact);
+        var message = String.format(localization.getNoUsername(),userToContact);
         sendMessage(chatId, message);
-        operatorActionMessage = StaticMessages.USER_WILL_CONTACT_YOU.getMessage();
+        operatorActionMessage = localization.getUserWillContactYou();
       } else {
-        sendMessage(chatId, String.format(StaticMessages.THANKS_MESSAGE.getMessage(),bot.getBotEntity().getSellerName()));
+        sendMessage(chatId, String.format(localization.getThanks(),bot.getBotEntity().getSellerName()));
       }
       String usernameDisplay = (username == null) ? "nemá vypněné" : "@" + username;
       String channelMessageText =
@@ -199,14 +200,14 @@ public class Messanger extends TelegramLongPollingBot {
   private String buildContentMessageFromStringIndex(String index, Long userId) {
     var botEntity = bot.getBotEntity();
     var selectedData = content.findById(Long.parseLong(index));
-    var contentSelected = StaticMessages.CONTENT_SELECTED.getMessage();
+    var contentSelected = localization.getContentSelected();
     var contentName = selectedData.getName();
     var contentType = selectedData.getType();
     var contentDescription = selectedData.getDescription();
     var contentPrice = selectedData.getPrice();
     var payment1 = botEntity.getPaymentMethod1();
     var payment2 = botEntity.getPaymentMethod2();
-    var paymentGuide = StaticMessages.PAYMENT_GUIDE.getMessage();
+    var paymentGuide = localization.getPaymentGuide();
 
     var paymentCommand = "/ZAPLACENO_" + selectedData.getId();
 
