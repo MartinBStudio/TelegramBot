@@ -61,6 +61,9 @@ public class Messanger extends TelegramLongPollingBot {
       }
       // ANY USER
       switch (messageText) {
+        case IS_ADMIN:
+          sendMessage(chatId, String.valueOf(isAdmin(user.getUserName())));
+          break;
         case START_COMMAND:
           sendMessage(chatId, StaticMessages.WELCOME.getMessage());
           break;
@@ -96,6 +99,21 @@ public class Messanger extends TelegramLongPollingBot {
       sendMessage(chatId, operationMessage);
       return;
     }
+    if (isDisplayCommand(messageText)) {
+      var operationMessage = content.display(getLongFromString(messageText));
+      sendMessage(chatId, operationMessage);
+      return;
+    }
+    if (isEditCommand(messageText)) {
+      var operationMessage = content.edit(getLongFromString(messageText));
+      sendMessage(chatId,operationMessage);
+      return;
+    }
+    if (isAddCommand(messageText)) {
+      var operationMessage = content.add(messageText);
+      sendMessage(chatId,operationMessage);
+      return;
+    }
   }
 
   // USER
@@ -114,7 +132,7 @@ public class Messanger extends TelegramLongPollingBot {
   }
 
   private void sendSpecificContentMessage(String messageText, Long chatId, User user) {
-    int messageNumber = getIntegerFromString(messageText);
+    var messageNumber = extractLongFromCommand(messageText,NUMBER_COMMAND);
     if (content.findById(messageNumber) != null) {
       sendMessage(
           chatId, buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()));
@@ -124,7 +142,7 @@ public class Messanger extends TelegramLongPollingBot {
   }
 
   private void sendUserPaidMessage(String messageText, Long chatId, User user) {
-    var requestedData = content.findById(getIntegerFromString(messageText));
+    var requestedData = content.findById(extractLongFromCommand(messageText,PAID_COMMAND));
     if (requestedData != null) {
       var data = requestedData;
       String username = user.getUserName();
@@ -140,7 +158,7 @@ public class Messanger extends TelegramLongPollingBot {
           String.format(
               "Username - %s\nObsah - [%s] %s\nČástka - %sCZK\nPoznámka k platbě - %s\n\n%s",
               usernameDisplay,
-              data.getContentIndex(),
+              data.getId(),
               data.getName(),
               data.getPrice(),
               user.getId(),
@@ -164,7 +182,7 @@ public class Messanger extends TelegramLongPollingBot {
       for (ContentEntity data : batch) {
         sb.append(
             String.format(
-                "/%s - %s - %s CZK\n", data.getContentIndex(), data.getName(), data.getPrice()));
+                "/%s - %s - %s CZK\n", data.getId(), data.getName(), data.getPrice()));
       }
       if (!sb.isEmpty()) sendMessage(chatId, sb.toString());
     }
@@ -180,7 +198,7 @@ public class Messanger extends TelegramLongPollingBot {
     var paymentDetails = StaticMessages.PAYMENT_DETAILS.getMessage();
     var paymentGuide = StaticMessages.PAYMENT_GUIDE.getMessage();
 
-    var paymentCommand = "/ZAPLACENO_" + selectedData.getContentIndex();
+    var paymentCommand = "/ZAPLACENO_" + selectedData.getId();
 
     return String.format(
         " %s\n\n%s\n DRUH - %s\n POPIS - %s\n CENA - %sCZK\n\n %s %s\n\n%s%s",
@@ -197,6 +215,9 @@ public class Messanger extends TelegramLongPollingBot {
   // ADMIN
 
   private void sendMessage(Long chatId, String messageText) {
+    if(messageText.isEmpty()){
+      return;
+    }
     SendMessage message = new SendMessage();
     message.setChatId(chatId.toString());
     message.setText(messageText);
