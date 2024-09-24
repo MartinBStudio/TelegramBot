@@ -17,7 +17,7 @@ public enum StaticMessages {
     PAYMENT_GUIDE("Až budou peníze poslané napiš "),
     PICK_CONTENT("Níže si prosím klikem na číslo vyber požadovaný obsah."),
   INVALID_REQUEST(
-      "Této odpovědí nerozumím :(.\n\nVyber si o jaký druh obsahu máš zájem:\n /video - naše amatérská videa\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí ");
+      "Této odpovědí nerozumím :(.\n\nVyber si o jaký druh obsahu máš zájem:\n /video - naše amatérská videa\n /photos - naše amatérské fotky\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí ");
 
     private final String message;
 

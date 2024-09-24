@@ -153,7 +153,7 @@ public class Messanger extends TelegramLongPollingBot {
       var data = requestedData;
       String username = user.getUserName();
       var operatorActionMessage = StaticMessages.CONTACT_USER.getMessage();
-      if (username != null) {
+      if (username == null) {
         var userToContact = bot.getBotEntity().getAdminUsers().get(0);
         var message = String.format(NO_USERNAME_MESSAGE.getMessage(),userToContact);
         sendMessage(chatId, message);
