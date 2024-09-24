@@ -105,7 +105,7 @@ public class Messanger extends TelegramLongPollingBot {
       return;
     }
     if (isEditCommand(messageText)) {
-      var operationMessage = content.edit(getLongFromString(messageText));
+      var operationMessage = content.edit(messageText);
       sendMessage(chatId,operationMessage);
       return;
     }

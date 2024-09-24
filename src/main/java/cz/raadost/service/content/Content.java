@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class Content {
@@ -56,21 +57,37 @@ public class Content {
       return "Content with id " + contentId + " not found.";
     }
   }
-
   @Transactional
-  public String edit(Long contentId) {
-    Optional<ContentEntity> contentEntity = contentRepository.findById(contentId);
-    if (contentEntity.isPresent()) {
-      return "Editing" + contentId;
-    } else {
-      return "Content with id " + contentId + " not found.";
+  public String edit(String messageText) {
+    try {
+      var contentId = extractIndexFromEditMessage(messageText); // Extracts the ID from the command
+      Optional<ContentEntity> contentEntityOptional = contentRepository.findById(contentId);
+      if (contentEntityOptional.isPresent()) {
+        var existingEntity = contentEntityOptional.get();
+        var payload = extractPayloadFromEditRequest(messageText);
+        ContentEntity newContentEntity = parsePayloadToContentEntity(payload);
+        existingEntity.setName(newContentEntity.getName());
+        existingEntity.setType(newContentEntity.getType());
+        existingEntity.setDescription(newContentEntity.getDescription());
+        existingEntity.setPrice(newContentEntity.getPrice());
+        existingEntity.setPreviewUrl(newContentEntity.getPreviewUrl());
+        existingEntity.setSubType(newContentEntity.getSubType());
+        existingEntity.setFullUrl(newContentEntity.getFullUrl());
+        contentRepository.save(existingEntity);
+        return "Editing content " + contentId + " was successful.";
+      } else {
+        return "Content with ID " + contentId + " not found.";
+      }
+    } catch (Exception e) {
+      return "Editing of existing content failed, make sure you follow guide properly.";
     }
   }
+
 
   @Transactional
   public String add(String messageText) {
     try{
-      var payload = extractPayload(messageText);
+      var payload = extractAddPayload(messageText);
       ContentEntity newContentEntity = parsePayloadToContentEntity(payload);
       contentRepository.save(newContentEntity);
       return "New content added - " + newContentEntity;
