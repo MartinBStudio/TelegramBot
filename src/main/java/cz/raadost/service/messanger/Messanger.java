@@ -96,6 +96,11 @@ public class Messanger extends TelegramLongPollingBot {
       sendMessage(chatId,bot.display());
       return;
     }
+    if (messageText.equals("/CHANGE_LANGUAGE")) {
+      localization.changeLocalization();
+      sendMessage(chatId,"Language changed to - " + localization.getLocalization());
+      return;
+    }
     if (isRemoveCommand(messageText)) {
       var operationMessage = content.remove(getLongFromString(messageText));
       sendMessage(chatId, operationMessage);
@@ -165,7 +170,7 @@ public class Messanger extends TelegramLongPollingBot {
       String usernameDisplay = (username == null) ? "nemá vypněné" : "@" + username;
       String channelMessageText =
           String.format(
-              "Username - %s\nObsah - [%s] %s\nČástka - %sCZK\nPoznámka k platbě - %s\n\n%s",
+              localization.getNotificationDetails(),
               usernameDisplay,
               data.getId(),
               data.getName(),
@@ -212,7 +217,7 @@ public class Messanger extends TelegramLongPollingBot {
     var paymentCommand = "/ZAPLACENO_" + selectedData.getId();
 
     return String.format(
-        " %s\n\n%s\n DRUH - %s\n POPIS - %s\n CENA - %sCZK\n\nPLATBA\n %s\n %s\n POZNÁMKA K PLATBĚ - %s\n\n%s%s",
+        localization.getContentDetails(),
         contentSelected,
         contentName,
         contentType,

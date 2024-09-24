@@ -2,6 +2,7 @@ FROM openjdk:19
 ENV ARTIFACT_NAME=001.jar
 # Telegram bot environment variables
 ENV TELEGRAM_BOT_USERNAME=your-telegram-bot-username
+ENV TELEGRAM_BOT_LOACALIZATION=localization
 ENV ORACLE_DB_USERNAME=your-db-username
 ENV ORACLE_DB_PASSWORD=your-db-password
 # Set the server port
