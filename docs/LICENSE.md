@@ -2,7 +2,7 @@
 
 **Version 1.0**
 
-**Copyright (c) [Year] [Your Name or Organization]**
+**Copyright (c) [2024] [Martin Masika]**
 
 ## 1. Permission
 
