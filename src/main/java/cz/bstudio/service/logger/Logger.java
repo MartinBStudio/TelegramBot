@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static cz.bstudio.service.Utils.calculateResponseTime;
+
 @Service
 @RequiredArgsConstructor
 public class Logger {
@@ -19,4 +21,10 @@ public class Logger {
         }
         logRepository.save(logEntity);
     }
+    public void logErrorMessage(Exception e, LogEntity logEntity){
+        logEntity.setErrorMessage(e.getMessage());
+        logEntity.setResponseTime(calculateResponseTime(logEntity));
+        log(logEntity);
+    }
+
 }

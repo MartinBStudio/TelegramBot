@@ -77,6 +77,10 @@ public class Bot {
     }
   }
 
+  public boolean isAdmin(String userName) {
+    return getBotEntity().getAdminUsers().contains(userName);
+  }
+
   private BotEntity parsePayloadToContentEntity(String payload) {
     Map<String, String> fields =
             Arrays.stream(payload.replace("BotEntity(", "").replace(")", "").split(", "))

@@ -12,16 +12,16 @@ public class Localization {
   private String localization;
 
   public void changeLocalization() {
-      if(localization.equals("czech")){
-          localization = "english";
+      if(localization.equals("CZE")){
+          localization = "ENG";
       }
       else{
-          localization = "czech";
+          localization = "CZE";
       }
   }
 
   private String getMessage(StaticMessages message) {
-    return localization.equals("czech") ? message.getCzechMessage() : message.getEnglishMessage();
+    return localization.equals("CZE") ? message.getCzechMessage() : message.getEnglishMessage();
   }
 
   public String getWelcome() {

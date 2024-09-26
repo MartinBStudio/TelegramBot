@@ -8,8 +8,8 @@ public enum StaticMessages {
       "Ahoj, děkujeme ti za zájem o můj obsah.\n\n Celkový počet: %s",
       "Hello, thank you for interest in my content.\n\nTotal amount: %s"),
   CONTENT_TYPES(
-      "Vyber si o jaký druh obsahu máš zájem.\n\n/all - všechen obsah\n /video - naše amatérská videa\n /photos - naše amatérské fotky\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí ",
-      "Choose what type you want to buy.\n\n/all - all content\n /video - our amateur videos\n /photos - our amateur photos\n /special - videos and photos on request just for you\n /bundle - photo or video packages"),
+      "Vyber si o jaký druh obsahu máš zájem.\n",
+      "Choose what type you want to buy.\n"),
   CONTENT_SELECTED("Vybral jsi následující obsah: ","You choose following content:"),
   NO_AVAILABLE_CONTENT("Prodejce bohužel zatím nenahrál žádný obsah. :(","Seller did not add any content yet :(."),
   CONTENT_OUT_OF_BOUNDS(

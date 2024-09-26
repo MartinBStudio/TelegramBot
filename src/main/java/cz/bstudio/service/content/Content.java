@@ -28,8 +28,11 @@ public class Content {
         ? contentRepository.findByOwner(BOT_USERNAME)
         : contentRepository.findByTypeAndOwner(filter, BOT_USERNAME);
   }
+  public List<String> getContentTypes(){
+    return contentRepository.findDistinctContentTypesByOwner(BOT_USERNAME);
+  }
 
-  public ContentEntity findById(long id) {
+  public ContentEntity findOwnedById(long id) {
     Optional<ContentEntity> optionalContent = contentRepository.findById(id);
     if (isOwner(optionalContent.get().getOwner())) {
       return optionalContent.get();
@@ -55,8 +58,6 @@ public class Content {
     }
   }
 
-
-
   @Transactional
   public String display(Long contentId) {
     Optional<ContentEntity> optionalEntity = contentRepository.findById(contentId);
@@ -70,17 +71,6 @@ public class Content {
     } else {
       return "Content with id " + contentId + " not found.";
     }
-  }
-  private String getReadableContentEntity(ContentEntity contentEntity) {
-    return String.format(
-            "[ContentEntity(name=%s, type=%s, subType=%s, description=%s, price=%s, previewUrl=%s, fullUrl=%s)]",
-            contentEntity.getName(),
-            contentEntity.getType(),
-            contentEntity.getSubType(),
-            contentEntity.getDescription(),
-            contentEntity.getPrice(),
-            contentEntity.getPreviewUrl(),
-            contentEntity.getFullUrl());
   }
 
   @Transactional
@@ -159,6 +149,17 @@ public class Content {
       parsedEntity.setPrice(Integer.valueOf(priceString));
     }
     return parsedEntity;
+  }
+  private String getReadableContentEntity(ContentEntity contentEntity) {
+    return String.format(
+            "[ContentEntity(name=%s, type=%s, subType=%s, description=%s, price=%s, previewUrl=%s, fullUrl=%s)]",
+            contentEntity.getName(),
+            contentEntity.getType(),
+            contentEntity.getSubType(),
+            contentEntity.getDescription(),
+            contentEntity.getPrice(),
+            contentEntity.getPreviewUrl(),
+            contentEntity.getFullUrl());
   }
 
   private boolean isOwner(String contentOwner) {
