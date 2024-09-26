@@ -44,5 +44,5 @@ test {
 	}
 }
 tasks.named('bootJar') {
-	archiveFileName = 'telegrambot.jar'
+	archiveFileName = 'telegram-content-provider-bot.jar'
 }
