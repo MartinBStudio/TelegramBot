@@ -1,4 +1,4 @@
-package cz.raadost.service.owner;
+package cz.bstudio.service.bot;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

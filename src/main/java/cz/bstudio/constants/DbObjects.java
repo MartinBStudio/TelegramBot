@@ -1,4 +1,4 @@
-package cz.raadost.constants;
+package cz.bstudio.constants;
 
 public class DbObjects {
    public static final String CONTENT_TABLE = "content";

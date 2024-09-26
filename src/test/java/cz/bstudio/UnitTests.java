@@ -1,7 +1,7 @@
-package cz.raadost;
+package cz.bstudio;
 
 
-import cz.raadost.service.content.Content;
+import cz.bstudio.service.content.Content;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;

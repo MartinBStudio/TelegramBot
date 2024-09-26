@@ -1,6 +1,6 @@
-package cz.raadost;
+package cz.bstudio;
 
-import cz.raadost.service.messanger.Messanger;
+import cz.bstudio.service.messanger.Messanger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,13 +1,13 @@
-package cz.raadost.service.messanger;
+package cz.bstudio.service.messanger;
 
-import static cz.raadost.service.messanger.Commands.*;
+import static cz.bstudio.service.messanger.Commands.*;
 
-import cz.raadost.service.content.Content;
-import cz.raadost.service.content.ContentEntity;
-import cz.raadost.service.localization.Localization;
-import cz.raadost.service.logger.LogEntity;
-import cz.raadost.service.logger.Logger;
-import cz.raadost.service.owner.Bot;
+import cz.bstudio.service.content.Content;
+import cz.bstudio.service.content.ContentEntity;
+import cz.bstudio.service.localization.Localization;
+import cz.bstudio.service.logger.LogEntity;
+import cz.bstudio.service.logger.Logger;
+import cz.bstudio.service.bot.Bot;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

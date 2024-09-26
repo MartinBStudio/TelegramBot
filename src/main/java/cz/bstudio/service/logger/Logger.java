@@ -1,4 +1,4 @@
-package cz.raadost.service.logger;
+package cz.bstudio.service.logger;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

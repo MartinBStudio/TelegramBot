@@ -1,7 +1,8 @@
-package cz.raadost.service.owner;
+package cz.bstudio.service.bot;
 
 
-import static cz.raadost.service.messanger.Commands.*;
+import static cz.bstudio.service.Utils.isNotEmpty;
+import static cz.bstudio.service.messanger.Commands.*;
 
 import jakarta.transaction.Transactional;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -74,9 +76,7 @@ public class Bot {
       return "Editing of bot details failed, make sure you follow guide properly.";
     }
   }
-  private boolean isNotEmpty(String str) {
-    return str != null && !str.trim().isEmpty();
-  }
+
   private BotEntity parsePayloadToContentEntity(String payload) {
     Map<String, String> fields =
             Arrays.stream(payload.replace("BotEntity(", "").replace(")", "").split(", "))

@@ -1,4 +1,4 @@
-package cz.raadost.service.owner;
+package cz.bstudio.service.bot;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cz.raadost.constants.DbObjects.*;
+import static cz.bstudio.constants.DbObjects.*;
 
 @Entity
 @Table(name = BOTS_TABLE)

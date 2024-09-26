@@ -1,4 +1,4 @@
-package cz.raadost.service.messanger;
+package cz.bstudio.service.messanger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

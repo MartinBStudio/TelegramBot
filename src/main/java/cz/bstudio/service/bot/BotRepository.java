@@ -1,7 +1,5 @@
-package cz.raadost.service.owner;
+package cz.bstudio.service.bot;
 
-import cz.raadost.service.content.ContentEntity;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

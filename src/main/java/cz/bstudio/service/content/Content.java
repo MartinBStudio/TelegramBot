@@ -1,6 +1,7 @@
-package cz.raadost.service.content;
+package cz.bstudio.service.content;
 
-import static cz.raadost.service.messanger.Commands.*;
+import static cz.bstudio.service.Utils.isNotEmpty;
+import static cz.bstudio.service.messanger.Commands.*;
 
 import jakarta.transaction.Transactional;
 import java.util.Arrays;
@@ -54,13 +55,7 @@ public class Content {
     }
   }
 
-  private boolean isNotEmpty(String str) {
-    return str != null && !str.trim().isEmpty();
-  }
 
-  private boolean isNotEmpty(Integer value) {
-    return value != null;
-  }
 
   @Transactional
   public String display(Long contentId) {

@@ -1,7 +1,6 @@
-package cz.raadost.service.content;
+package cz.bstudio.service.content;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

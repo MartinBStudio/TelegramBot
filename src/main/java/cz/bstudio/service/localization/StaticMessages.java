@@ -1,4 +1,4 @@
-package cz.raadost.service.localization;
+package cz.bstudio.service.localization;
 
 import lombok.Getter;
 

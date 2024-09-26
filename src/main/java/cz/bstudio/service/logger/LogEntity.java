@@ -1,6 +1,6 @@
-package cz.raadost.service.logger;
+package cz.bstudio.service.logger;
 
-import static cz.raadost.constants.DbObjects.*;
+import static cz.bstudio.constants.DbObjects.*;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

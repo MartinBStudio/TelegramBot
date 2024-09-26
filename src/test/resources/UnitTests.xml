@@ -2,7 +2,7 @@
 <suite name="Unit Tests" verbose="1">
     <test name="Sample Test">
         <classes>
-            <class name="cz.raadost.UnitTests"/> <!-- Ensure this matches the package/class -->
+            <class name="cz.bstudio.UnitTests"/> <!-- Ensure this matches the package/class -->
         </classes>
     </test>
 </suite>
