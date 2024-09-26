@@ -21,7 +21,7 @@ public class UnitTests extends AbstractTestNGSpringContextTests {
   }*/
   @Test
   public void findById() {
-    var entity = content.findById(1);
+    var entity = content.findOwnedById(1);
     System.out.println(entity);
   }
 }
