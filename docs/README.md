@@ -1,4 +1,4 @@
-# Telegram Bot Service
+# Telegram Bot 
 
 This repository contains a Spring Boot-based Telegram bot that provides various types of content. The bot integrates with a database to serve content dynamically and offers several features that make it flexible and customizable.
 
