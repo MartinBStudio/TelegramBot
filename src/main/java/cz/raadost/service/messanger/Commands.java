@@ -9,6 +9,8 @@ public class Commands {
   public static final String PAID_COMMAND = "/ZAPLACENO_(\\d+)";
   public static final String IS_ADMIN = "/IS_ADMIN";
   public static final String START_COMMAND = "/start";
+  public static final String CHANGE_LANGUAGE = "/CHANGE_LANGUAGE";
+  public static final String DISPLAY_BOT_DETAILS = "/DISPLAY_BOT";
   public static final String ALL_COMMAND = "/all";
   public static final String VIDEO_COMMAND = "/video";
   public static final String SPECIAL_COMMAND = "/special";
@@ -19,7 +21,7 @@ public class Commands {
   public static final String REMOVE_CONTENT_COMMAND = "/REMOVE_(\\d+)";
   public static final String DISPLAY_CONTENT_COMMAND = "/DISPLAY_(\\d+)";
   public static final String EDIT_CONTENT_COMMAND = "/EDIT_(\\d+)_\\[(.*?)\\]";
-  public static final String UPDATE_BOT_DETAILS_COMMAND = "/EDIT_BOT_DETAILS_\\[(.*?)\\]";
+  public static final String EDIT_BOT_COMMAND = "/EDIT_BOT_\\[(.*?)\\]";
 
   public static final String ADD_CONTENT_COMMAND = "/ADD_\\[.*\\]";
 
@@ -58,7 +60,7 @@ public class Commands {
     return messageText.matches(EDIT_CONTENT_COMMAND);
   }
   public static boolean isUpdateBotDetailsCommand(String messageText) {
-    return messageText.matches(UPDATE_BOT_DETAILS_COMMAND);
+    return messageText.matches(EDIT_BOT_COMMAND);
   }
 
   public static boolean isAddCommand(String messageText) {
@@ -92,7 +94,7 @@ public class Commands {
   }
   public static String extractPayloadFromEditBotRequest(String command) {
     // Regular expression to match the command format
-    String regex = UPDATE_BOT_DETAILS_COMMAND;
+    String regex = EDIT_BOT_COMMAND;
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(command);
 

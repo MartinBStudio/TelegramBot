@@ -3,10 +3,8 @@ package cz.raadost.service.owner;
 
 import static cz.raadost.service.messanger.Commands.*;
 
-import cz.raadost.service.content.ContentEntity;
 import jakarta.transaction.Transactional;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,10 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class Bot {
+  private final BotRepository contentRepository;
   @Value("${telegram.bot.username}")
   private String BOT_USERNAME;
-  private final BotRepository contentRepository;
-
 
   public BotEntity getBotEntity() {
     Optional<BotEntity> optionalContent = contentRepository.findBotEntityByBotName(BOT_USERNAME);
@@ -30,7 +27,18 @@ public class Bot {
   }
   public String display() {
     Optional<BotEntity> optionalContent = contentRepository.findBotEntityByBotName(BOT_USERNAME);
-    return optionalContent.toString();
+    if (optionalContent.isPresent()) {
+      BotEntity botEntity = optionalContent.get();
+      // Create a custom formatted string with only the desired fields
+      return getReadableBotEntity(botEntity);
+    }
+    return "Bot not found";
+  }
+  private String getReadableBotEntity(BotEntity botEntity) {
+    return String.format("[BotEntity(sellerName=%s, paymentMethod1=%s, paymentMethod2=%s)]",
+            botEntity.getSellerName(),
+            botEntity.getPaymentMethod1(),
+            botEntity.getPaymentMethod2());
   }
   @Transactional
   public String edit(String messageText) {
@@ -38,32 +46,49 @@ public class Bot {
       Optional<BotEntity> optionalBotEntity = contentRepository.findBotEntityByBotName(BOT_USERNAME);
       if (optionalBotEntity.isPresent()) {
         var existingEntity = optionalBotEntity.get();
-        var payload = extractPayloadFromEditBotRequest(messageText);
-        BotEntity newBotEntity = parsePayloadToContentEntity(payload);
-        existingEntity.setPaymentMethod1(newBotEntity.getPaymentMethod1());
-        existingEntity.setPaymentMethod2(newBotEntity.getPaymentMethod2());
-        contentRepository.save(existingEntity);
-        return "Editing bot properties was successful.";
+        if(existingEntity.getBotName().equals(BOT_USERNAME)) {
+          var payload = extractPayloadFromEditBotRequest(messageText);
+          BotEntity newBotEntity = parsePayloadToContentEntity(payload);
+          var newPaymentMethod1 = newBotEntity.getPaymentMethod1();
+          var newPaymentMethod2 = newBotEntity.getPaymentMethod2();
+          var newSellerName = newBotEntity.getSellerName();
+          if(isNotEmpty(newPaymentMethod1)){
+          existingEntity.setPaymentMethod1(newPaymentMethod1);
+          }
+          if(isNotEmpty(newPaymentMethod2)){
+            existingEntity.setPaymentMethod2(newPaymentMethod2);
+          }
+          if(isNotEmpty(newSellerName)){
+            existingEntity.setSellerName(newSellerName);
+          }
+          contentRepository.save(existingEntity);
+          return "Bot details updated successfully:\n"+getReadableBotEntity(existingEntity);
+        }
+        else{
+          return "Not enough permissions.";
+        }
       } else {
         return "Bot does not exist.";
       }
     } catch (Exception e) {
-      return "Editing of bot details failed, make sure you follow guide properly." + e.getMessage();
+      return "Editing of bot details failed, make sure you follow guide properly.";
     }
+  }
+  private boolean isNotEmpty(String str) {
+    return str != null && !str.trim().isEmpty();
   }
   private BotEntity parsePayloadToContentEntity(String payload) {
     Map<String, String> fields =
             Arrays.stream(payload.replace("BotEntity(", "").replace(")", "").split(", "))
                     .map(s -> s.split("="))
                     .collect(Collectors.toMap(a -> a[0].trim(), a -> a.length > 1 ? a[1].trim() : null));
-
+ var sellerName = fields.get("sellerName");
+ var paymentMethod1 = fields.get("paymentMethod1");
+ var paymentMethod2 = fields.get("paymentMethod2");
     return BotEntity.builder()
-            .botName(fields.get("botName"))
-            .botToken(fields.get("botToken"))
-            .sellerName(fields.get("sellerName"))
-            .paymentMethod1(fields.get("paymentMethod1"))
-            .paymentMethod2(fields.get("paymentMethod2"))
-            .notificationChannel(fields.get("notificationChannel"))
+            .sellerName(sellerName)
+            .paymentMethod1(paymentMethod1)
+            .paymentMethod2(paymentMethod2)
             .build();
   }
 }

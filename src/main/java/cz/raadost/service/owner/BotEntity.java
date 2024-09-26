@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static cz.raadost.constants.DbObjects.*;
@@ -19,7 +20,7 @@ import static cz.raadost.constants.DbObjects.*;
 public class BotEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = CONTENT_SEQ)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = BOT_SEQ)
   @SequenceGenerator(name = BOT_SEQ, sequenceName = BOT_SEQ, allocationSize = 1)
   private Long id;
 
@@ -30,6 +31,6 @@ public class BotEntity {
   private String paymentMethod2;
   private String notificationChannel;
   @Convert(converter = StringListConverter.class)
-  private List<String> adminUsers;
+  @Builder.Default private List<String> adminUsers = new ArrayList<>();
 
 }

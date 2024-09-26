@@ -5,11 +5,15 @@ import lombok.Getter;
 @Getter
 public enum StaticMessages {
   WELCOME(
-      "Ahoj, děkujeme ti za zájem o můj amatérský obsah.\nVyber si o jaký druh obsahu máš zájem:\n /video - naše amatérská videa\n /photos - naše amatérské fotky\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí ",
-      "Hello, thank you for your interest in our amateur content.\nChoose what type of content you want to buy:\n /video - our amateur videos\n /photos - our amateur photos\n /special - videos and photos on request just for you\n /bundle - photo or video packages"),
+      "Ahoj, děkujeme ti za zájem o můj obsah.\n\n Celkový počet: %s",
+      "Hello, thank you for interest in my content.\n\nTotal amount: %s"),
+  CONTENT_TYPES(
+      "Vyber si o jaký druh obsahu máš zájem.\n\n/all - všechen obsah\n /video - naše amatérská videa\n /photos - naše amatérské fotky\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí ",
+      "Choose what type you want to buy.\n\n/all - all content\n /video - our amateur videos\n /photos - our amateur photos\n /special - videos and photos on request just for you\n /bundle - photo or video packages"),
   CONTENT_SELECTED("Vybral jsi následující obsah: ","You choose following content:"),
+  NO_AVAILABLE_CONTENT("Prodejce bohužel zatím nenahrál žádný obsah. :(","Seller did not add any content yet :(."),
   CONTENT_OUT_OF_BOUNDS(
-      "Obsah s takovým indexem není k dispozici.\n\nVyber si o jaký druh obsahu máš zájem:\n /video - naše amatérská videa\n /photos - naše amatérské fotky\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí.","Content with following index %s is not found."),
+      "Obsah s takovým indexem není k dispozici.","Content with following index is not available."),
   THANKS_MESSAGE("Děkujeme za zaplacení. %s platbu ověří a spoji se s tebou na Telegramu.","Thank you for your payment. %s will verify payment and get in touch with you."),
   CONTACT_USER("Ověř platbu a uživatele kontaktuj!","You said he paid, so please contact him !"),
   USER_WILL_CONTACT_YOU(

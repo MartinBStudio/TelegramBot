@@ -27,9 +27,15 @@ public class Localization {
   public String getWelcome() {
     return getMessage(StaticMessages.WELCOME);
   }
+  public String getContentTypes() {
+    return getMessage(StaticMessages.CONTENT_TYPES);
+  }
 
   public String getContentSelected() {
     return getMessage(StaticMessages.CONTENT_SELECTED);
+  }
+  public String getNoAvailableContent() {
+    return getMessage(StaticMessages.NO_AVAILABLE_CONTENT);
   }
 
   public String getContentOutOfBounds() {

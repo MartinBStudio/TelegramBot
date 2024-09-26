@@ -24,9 +24,10 @@ public class ContentEntity {
 
   private String name;
   private String type;
+  private String owner;
   private String subType;
   private String description;
-  private int price;
+  private Integer price;
   private String previewUrl;
   private String fullUrl;
 }
