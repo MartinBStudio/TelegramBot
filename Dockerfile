@@ -12,4 +12,4 @@ COPY /*.jar ./$ARTIFACT_NAME
 # Set the maintainer label
 LABEL maintainer="Martin Masika <martin.masika@icloud.com>"
 # Run the jar file using the ARTIFACT_NAME variable
-CMD ["sh", "-c", "java -jar $ARTIFACT_NAME"]
+CMD ["sh", "-c", "java -jar telegram-content-provider-bot.jar"]
