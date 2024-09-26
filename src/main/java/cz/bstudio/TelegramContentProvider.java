@@ -10,12 +10,12 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-public class TelegramBot {
+public class TelegramContentProvider {
 	private final Messanger messanger;
 
 	public static void main(String[] args) {
-		var context = SpringApplication.run(TelegramBot.class, args);
-		TelegramBot bot = context.getBean(TelegramBot.class);
+		var context = SpringApplication.run(TelegramContentProvider.class, args);
+		TelegramContentProvider bot = context.getBean(TelegramContentProvider.class);
 		bot.initializeBot();
 	}
 
