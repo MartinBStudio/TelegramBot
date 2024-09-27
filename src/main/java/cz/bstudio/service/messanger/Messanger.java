@@ -1,7 +1,7 @@
 package cz.bstudio.service.messanger;
 
-import static cz.bstudio.service.Utils.calculateResponseTime;
 import static cz.bstudio.service.messanger.Commands.*;
+import static cz.bstudio.service.utils.Utils.calculateResponseTime;
 
 import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.content.Content;
@@ -9,10 +9,6 @@ import cz.bstudio.service.content.ContentEntity;
 import cz.bstudio.service.localization.Localization;
 import cz.bstudio.service.logger.LogEntity;
 import cz.bstudio.service.logger.Logger;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.PropertySource;
@@ -43,205 +39,144 @@ public class Messanger extends TelegramLongPollingBot {
   public String getBotUsername() {
     return bot.getBotEntity().getBotName();
   }
+
   @Override
   public void onUpdateReceived(Update update) {
-    LogEntity logEntity = createInitialLog(update);
+    handleIncomingRequest(update);
+  }
+
+  private void handleIncomingRequest(Update update) {
+    LogEntity logEntity = logger.createInitialLog(update);
     try {
       if (update.hasMessage() && update.getMessage().hasText()) {
         String messageText = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
         User user = update.getMessage().getFrom();
+        var isAdmin = bot.isAdmin(user.getUserName());
         var isUserCommand = false;
         var isAdminCommand = false;
 
-        if (bot.isAdmin(user.getUserName())) {
-          isAdminCommand =handleCustomAdminMessages(messageText, chatId, logEntity, user);
+        if (isAdmin) {
+          isAdminCommand = handleCustomAdminMessages(messageText, chatId, logEntity, user);
         }
-        isUserCommand=handleCustomUserMessages(messageText, chatId, user, logEntity);
+        isUserCommand = handleCustomUserMessages(messageText, chatId, user, logEntity);
 
-        if(!isUserCommand &&!isAdminCommand){
-          sendMessage(chatId, localization.getInvalidRequest(), logEntity);
+        if (!isUserCommand && !isAdminCommand) {
+          sendMessage(chatId, localization.getInvalidRequest(), false, logEntity);
         }
       }
     } catch (Exception e) {
-      logger.logErrorMessage(e,logEntity);
+      logger.logErrorMessage(e, logEntity);
     }
   }
-
 
   private boolean handleCustomAdminMessages(
       String messageText, Long chatId, LogEntity log, User user) {
     if (messageText.equals(IS_ADMIN)) {
-      sendMessage(chatId, String.valueOf(bot.isAdmin(user.getUserName())), log);
+      sendMessage(chatId, String.valueOf(bot.isAdmin(user.getUserName())), false, log);
       return true;
     }
     if (messageText.equals(DISPLAY_BOT_DETAILS)) {
-      sendMessage(chatId, bot.display(), log);
+      sendMessage(chatId, bot.display(), false, log);
       return true;
     }
     if (messageText.equals(CHANGE_LANGUAGE)) {
       localization.changeLocalization();
-      sendMessage(chatId, "Bot language switched to - " + localization.getLocalization(), log);
+      sendMessage(
+          chatId,
+          String.format(localization.getLanguageChanged(), localization.getLocalization()),
+          false,
+          log);
       return true;
     }
     if (isRemoveCommand(messageText)) {
       var operationMessage = content.remove(getLongFromString(messageText));
-      sendMessage(chatId, operationMessage, log);
+      sendMessage(chatId, operationMessage, false, log);
       return true;
     }
     if (isDisplayCommand(messageText)) {
       var operationMessage = content.display(getLongFromString(messageText));
-      sendMessage(chatId, operationMessage, log);
+      sendMessage(chatId, operationMessage, false, log);
       return true;
     }
     if (isEditCommand(messageText)) {
       var operationMessage = content.edit(messageText);
-      sendMessage(chatId, operationMessage, log);
+      sendMessage(chatId, operationMessage, false, log);
       return true;
     }
     if (isUpdateBotDetailsCommand(messageText)) {
       var operationMessage = bot.edit(messageText);
-      sendMessage(chatId, operationMessage, log);
+      sendMessage(chatId, operationMessage, false, log);
       return true;
     }
     if (isAddCommand(messageText)) {
       var operationMessage = content.add(messageText);
-      sendMessage(chatId, operationMessage, log);
+      sendMessage(chatId, operationMessage, false, log);
       return true;
     }
     return false;
   }
-  private boolean handleCustomUserMessages(String messageText, Long chatId, User user, LogEntity log) {
+
+  private boolean handleCustomUserMessages(
+      String messageText, Long chatId, User user, LogEntity log) {
     var contentTypes = content.getContentTypes();
     if (messageText.equals(START_COMMAND)) {
       var contentSize = content.getData("").size();
-      sendMessage(chatId, String.format(localization.getWelcome(), contentSize), log);
+      sendMessage(chatId, String.format(localization.getWelcome(), contentSize), false, log);
       sendMessage(
           chatId,
           contentSize > 0
-              ? localization.getContentTypes() + buildContentTypesString()
+              ? localization.getContentTypes() + content.buildContentTypesString()
               : localization.getNoAvailableContent(),
+          false,
           log);
       return true;
     }
     for (String type : contentTypes) {
       if (messageText.equals("/" + type)) {
-        sendContentListMessage(chatId, type, log);
+        sendMessage(chatId, content.buildContentListMessage(type), true, log);
         return true;
       }
     }
     if (isNumberCommand(messageText)) {
-      sendSelectedContentMessage(messageText, chatId, user, log);
+      sendMessage(chatId, content.buildSelectedContentMessage(messageText, user), false, log);
       return true;
     }
     if (isPaidCommand(messageText)) {
-      sendUserPaidMessage(messageText, chatId, user, log);
+      var requestedData = content.findOwnedById(extractLongFromCommand(messageText, PAID_COMMAND));
+      if (requestedData != null) {
+        var notificationChannel = Long.parseLong(bot.getBotEntity().getNotificationChannel());
+        sendMessage(notificationChannel, buildNotificationMessage(requestedData, user), false, log);
+        String message =
+            (user.getUserName() == null)
+                ? String.format(
+                    localization.getNoUsername(), bot.getBotEntity().getAdminUsers().get(0))
+                : String.format(localization.getThanks(), bot.getBotEntity().getSellerName());
+        sendMessage(chatId, message, false, log);
+      }
       return true;
     }
     return false;
   }
-  private String buildContentTypesString() {
-    var sb = new StringBuilder();
-    var contentTypes = content.getContentTypes();
-    for (String type : contentTypes) {
-      sb.append("/" + type + "\n");
-    }
-    return sb.toString();
-  }
-  private void sendSelectedContentMessage(
-      String messageText, Long chatId, User user, LogEntity log) {
-    var messageNumber = extractLongFromCommand(messageText, NUMBER_COMMAND);
-    if (content.findOwnedById(messageNumber) != null) {
-      sendMessage(
-          chatId,
-          buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()),
-          true,
-          log);
-    } else {
-      sendMessage(chatId, localization.getContentOutOfBounds(), log);
-    }
-  }
-  private void sendUserPaidMessage(String messageText, Long chatId, User user, LogEntity log) {
-    var requestedData = content.findOwnedById(extractLongFromCommand(messageText, PAID_COMMAND));
-    if (requestedData != null) {
-      var data = requestedData;
-      String username = user.getUserName();
-      var operatorActionMessage = localization.getContactUser();
-      if (username == null) {
-        var userToContact = bot.getBotEntity().getAdminUsers().get(0);
-        var message = String.format(localization.getNoUsername(), userToContact);
-        sendMessage(chatId, message, log);
-        operatorActionMessage = localization.getUserWillContactYou();
-      } else {
-        sendMessage(
-            chatId,
-            String.format(localization.getThanks(), bot.getBotEntity().getSellerName()),
-            log);
-      }
-      String usernameDisplay = (username == null) ? "nemá vypněné" : "@" + username;
-      String channelMessageText =
-          String.format(
-              localization.getNotificationDetails(),
-              usernameDisplay,
-              data.getId(),
-              data.getName(),
-              data.getPrice(),
-              user.getId(),
-              operatorActionMessage);
-      sendMessage(
-          Long.parseLong(bot.getBotEntity().getNotificationChannel()), channelMessageText, log);
-    }
-  }
-  private void sendContentListMessage(Long chatId, String filter, LogEntity log) {
-    List<ContentEntity> content = this.content.getData(filter);
-    if (content.size() > 0) {
-      int batchSize = 30; // Maximum number of items per message
-      List<List<ContentEntity>> batches = new ArrayList<>();
-      // Split the content into batches
-      for (int i = 0; i < content.size(); i += batchSize) {
-        int end = Math.min(i + batchSize, content.size());
-        batches.add(content.subList(i, end));
-      }
-      // Send each batch as a separate message
-      for (List<ContentEntity> batch : batches) {
-        StringBuilder sb = new StringBuilder();
-        for (ContentEntity data : batch) {
-          sb.append(
-              String.format("/%s - %s - %s CZK\n", data.getId(), data.getName(), data.getPrice()));
-        }
-        if (!sb.isEmpty()) sendMessage(chatId, sb.toString(), log);
-      }
-    } else {
-      sendMessage(chatId, "No content found.", log);
-    }
-  }
-  private String buildContentMessageFromStringIndex(String index, Long userId) {
-    var botEntity = bot.getBotEntity();
-    var selectedData = content.findOwnedById(Long.parseLong(index));
-    var contentSelected = localization.getContentSelected();
-    var contentName = selectedData.getName();
-    var contentType = selectedData.getType();
-    var contentDescription = selectedData.getDescription();
-    var contentPrice = selectedData.getPrice();
-    var payment1 = botEntity.getPaymentMethod1();
-    var payment2 = botEntity.getPaymentMethod2();
-    var paymentGuide = localization.getPaymentGuide();
 
-    var paymentCommand = "/ZAPLACENO_" + selectedData.getId();
-
-    return String.format(
-        localization.getContentDetails(),
-        contentSelected,
-        contentName,
-        contentType,
-        contentDescription,
-        contentPrice,
-        payment1,
-        payment2,
-        userId,
-        paymentGuide,
-        paymentCommand);
+  private String buildNotificationMessage(ContentEntity data, User user) {
+    String username = user.getUserName();
+    String message;
+    String usernameDisplay = (username == null) ? "n/a" : "@" + username;
+    var operatorActionMessage =
+        (username == null) ? localization.getUserWillContactYou() : localization.getContactUser();
+    message =
+        String.format(
+            localization.getNotificationDetails(),
+            usernameDisplay,
+            data.getId(),
+            data.getName(),
+            data.getPrice(),
+            user.getId(),
+            operatorActionMessage);
+    return message;
   }
+
   private void sendMessage(
       Long chatId, String messageText, boolean disableWebPreview, LogEntity log) {
     log.setBotResponse(messageText);
@@ -253,11 +188,8 @@ public class Messanger extends TelegramLongPollingBot {
     message.setChatId(chatId.toString());
     message.setText(messageText);
     message.setDisableWebPagePreview(disableWebPreview);
-    executeMessage(log, message);
-  }
-  private void executeMessage(LogEntity log, SendMessage sendMessage) {
     try {
-      execute(sendMessage);
+      execute(message);
       log.setResponseTime(calculateResponseTime(log));
       logger.log(log);
     } catch (TelegramApiException e) {
@@ -266,44 +198,5 @@ public class Messanger extends TelegramLongPollingBot {
       log.setTelegramErrorMessage(e.getMessage());
       logger.log(log);
     }
-  }
-  private LogEntity createInitialLog(Update update) {
-    var message = update.getMessage();
-    String messageText = message.getText();
-    var messageId = message.getMessageId();
-    Long chatId = message.getChatId();
-    User user = message.getFrom();
-    var isGroupMessage = message.isGroupMessage();
-    var userId = user.getId();
-    var username = user.getUserName();
-    var isBot = user.getIsBot();
-    var language = user.getLanguageCode();
-    var isAdmin = bot.isAdmin(username);
-
-    return LogEntity.builder()
-            .botName(bot.getBotEntity().getBotName())
-            .username(username)
-            .userId(userId)
-            .chatId(chatId)
-            .isAdmin(isAdmin)
-            .messageId(messageId)
-            .message(messageText)
-            .userLanguage(language)
-            .isBot(isBot)
-            .isGroupChat(isGroupMessage) // Private chat
-            .timestamp(LocalDateTime.now()) // Manually setting timestamp if needed
-            .build();
-  }
-  private void sendMessage(Long chatId, String messageText, LogEntity log) {
-    log.setBotResponse(messageText);
-    if (messageText.isEmpty()) {
-      log.setResponseTime(calculateResponseTime(log));
-      logger.log(log);
-      return;
-    }
-    SendMessage message = new SendMessage();
-    message.setChatId(chatId.toString());
-    message.setText(messageText);
-    executeMessage(log, message);
   }
 }

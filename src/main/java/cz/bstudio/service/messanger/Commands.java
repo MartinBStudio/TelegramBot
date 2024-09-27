@@ -11,11 +11,6 @@ public class Commands {
   public static final String START_COMMAND = "/start";
   public static final String CHANGE_LANGUAGE = "/CHANGE_LANGUAGE";
   public static final String DISPLAY_BOT_DETAILS = "/DISPLAY_BOT";
-  public static final String ALL_COMMAND = "/all";
-  public static final String VIDEO_COMMAND = "/video";
-  public static final String SPECIAL_COMMAND = "/special";
-  public static final String BUNDLE_COMMAND = "/bundle";
-  public static final String PHOTOS_COMMAND = "/photos";
   public static final String NUMBER_COMMAND = "/(\\d+)";
   // ADMIN
   public static final String REMOVE_CONTENT_COMMAND = "/REMOVE_(\\d+)";

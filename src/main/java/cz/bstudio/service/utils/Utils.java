@@ -1,4 +1,4 @@
-package cz.bstudio.service;
+package cz.bstudio.service.utils;
 
 import cz.bstudio.service.logger.LogEntity;
 

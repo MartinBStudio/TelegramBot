@@ -3,10 +3,13 @@ package cz.bstudio.service.localization;
 import lombok.Getter;
 
 @Getter
-public enum StaticMessages {
+enum Messages {
   WELCOME(
       "Ahoj, děkujeme ti za zájem o můj obsah.\n\n Celkový počet: %s",
       "Hello, thank you for interest in my content.\n\nTotal amount: %s"),
+  LANGUAGE_CHANGED(
+          "Jazyk bota změněn na -  %s",
+          "Language changed to - %s"),
   CONTENT_TYPES(
       "Vyber si o jaký druh obsahu máš zájem.\n",
       "Choose what type you want to buy.\n"),
@@ -34,10 +37,7 @@ public enum StaticMessages {
   private final String czechMessage;
   private final String englishMessage;
 
-
-
-
-  StaticMessages(String czechMessage, String englishMessage) {
+  Messages(String czechMessage, String englishMessage) {
     this.czechMessage = czechMessage;
     this.englishMessage = englishMessage;
   }

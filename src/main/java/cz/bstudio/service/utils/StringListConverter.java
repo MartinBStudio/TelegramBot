@@ -1,4 +1,4 @@
-package cz.bstudio.service.bot;
+package cz.bstudio.service.utils;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

@@ -1,7 +1,7 @@
 package cz.bstudio.service.bot;
 
 
-import static cz.bstudio.service.Utils.isNotEmpty;
+import static cz.bstudio.service.utils.Utils.isNotEmpty;
 import static cz.bstudio.service.messanger.Commands.*;
 
 import jakarta.transaction.Transactional;
@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -36,12 +35,6 @@ public class Bot {
     }
     return "Bot not found";
   }
-  private String getReadableBotEntity(BotEntity botEntity) {
-    return String.format("[BotEntity(sellerName=%s, paymentMethod1=%s, paymentMethod2=%s)]",
-            botEntity.getSellerName(),
-            botEntity.getPaymentMethod1(),
-            botEntity.getPaymentMethod2());
-  }
   @Transactional
   public String edit(String messageText) {
     try {
@@ -55,7 +48,7 @@ public class Bot {
           var newPaymentMethod2 = newBotEntity.getPaymentMethod2();
           var newSellerName = newBotEntity.getSellerName();
           if(isNotEmpty(newPaymentMethod1)){
-          existingEntity.setPaymentMethod1(newPaymentMethod1);
+            existingEntity.setPaymentMethod1(newPaymentMethod1);
           }
           if(isNotEmpty(newPaymentMethod2)){
             existingEntity.setPaymentMethod2(newPaymentMethod2);
@@ -76,11 +69,16 @@ public class Bot {
       return "Editing of bot details failed, make sure you follow guide properly.";
     }
   }
-
   public boolean isAdmin(String userName) {
     return getBotEntity().getAdminUsers().contains(userName);
   }
 
+  private String getReadableBotEntity(BotEntity botEntity) {
+    return String.format("[BotEntity(sellerName=%s, paymentMethod1=%s, paymentMethod2=%s)]",
+            botEntity.getSellerName(),
+            botEntity.getPaymentMethod1(),
+            botEntity.getPaymentMethod2());
+  }
   private BotEntity parsePayloadToContentEntity(String payload) {
     Map<String, String> fields =
             Arrays.stream(payload.replace("BotEntity(", "").replace(")", "").split(", "))

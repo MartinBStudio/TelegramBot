@@ -1,24 +1,27 @@
 package cz.bstudio.service.content;
 
-import static cz.bstudio.service.Utils.isNotEmpty;
+import static cz.bstudio.service.utils.Utils.isNotEmpty;
 import static cz.bstudio.service.messanger.Commands.*;
 
+import cz.bstudio.service.bot.Bot;
+import cz.bstudio.service.localization.Localization;
 import jakarta.transaction.Transactional;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class Content {
   private final ContentRepository contentRepository;
+  private final Bot bot;
+  private final Localization localization;
 
   @Value("${telegram.bot.username}")
   private String BOT_USERNAME;
@@ -30,6 +33,76 @@ public class Content {
   }
   public List<String> getContentTypes(){
     return contentRepository.findDistinctContentTypesByOwner(BOT_USERNAME);
+  }
+  public String buildContentTypesString() {
+    var sb = new StringBuilder();
+    var contentTypes = getContentTypes();
+    for (String type : contentTypes) {
+      sb.append("/" + type + "\n");
+    }
+    return sb.toString();
+  }
+  public String buildContentMessageFromStringIndex(String index, Long userId) {
+    var botEntity = bot.getBotEntity();
+    var selectedData = findOwnedById(Long.parseLong(index));
+    var contentSelected = localization.getContentSelected();
+    var contentName = selectedData.getName();
+    var contentType = selectedData.getType();
+    var contentDescription = selectedData.getDescription();
+    var contentPrice = selectedData.getPrice();
+    var payment1 = botEntity.getPaymentMethod1();
+    var payment2 = botEntity.getPaymentMethod2();
+    var paymentGuide = localization.getPaymentGuide();
+
+    var paymentCommand = "/ZAPLACENO_" + selectedData.getId();
+
+    return String.format(
+            localization.getContentDetails(),
+            contentSelected,
+            contentName,
+            contentType,
+            contentDescription,
+            contentPrice,
+            payment1,
+            payment2,
+            userId,
+            paymentGuide,
+            paymentCommand);
+  }
+  public String buildSelectedContentMessage(String messageText, User user) {
+    String message;
+    var messageNumber = extractLongFromCommand(messageText, NUMBER_COMMAND);
+    if (findOwnedById(messageNumber) != null) {
+      message = buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId());
+    } else {
+      message = localization.getContentOutOfBounds();
+    }
+    return message;
+  }
+  public String buildContentListMessage(String filter ) {
+    String message = "";
+    List<ContentEntity> content = getData(filter);
+    if (content.size() > 0) {
+      int batchSize = 30; // Maximum number of items per message
+      List<List<ContentEntity>> batches = new ArrayList<>();
+      // Split the content into batches
+      for (int i = 0; i < content.size(); i += batchSize) {
+        int end = Math.min(i + batchSize, content.size());
+        batches.add(content.subList(i, end));
+      }
+      // Send each batch as a separate message
+      for (List<ContentEntity> batch : batches) {
+        StringBuilder sb = new StringBuilder();
+        for (ContentEntity data : batch) {
+          sb.append(
+                  String.format("/%s - %s - %s CZK\n", data.getId(), data.getName(), data.getPrice()));
+        }
+        message = sb.toString();
+      }
+    } else {
+      message = "No Content found";
+    }
+    return message;
   }
 
   public ContentEntity findOwnedById(long id) {
