@@ -24,7 +24,6 @@ enum Messages {
   NO_USERNAME_MESSAGE(
       "Děkujeme za zaplacení. Na tvém účtu nemáš vyplněné username, prosím napiš zprávu uživateli @%s a řekni ju co jsi vyplnil do poznámky k platbě, aby mohla platbu ověřit.","Thank you for your payment, please contact @%s and tell her your payment note.She will then provide content for you."),
   PAYMENT_GUIDE("Až budou peníze poslané napiš ","After you send the money please use following command "),
-  PICK_CONTENT("Níže si prosím klikem na číslo vyber požadovaný obsah.","Here, by clicking on index select requested content."),
   NOTIFICATION_DETAILS(
       "Username - %s\nObsah - [%s] %s\nČástka - %sCZK\nPoznámka k platbě - %s\n\n%s",
       "Username - %s\nContent - [%s] %s\nPrice -%s euro\nPayment note - %s\n\n%s"),

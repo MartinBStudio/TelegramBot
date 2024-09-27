@@ -72,24 +72,26 @@ public class Messanger extends TelegramLongPollingBot {
 
   private boolean handleCustomAdminMessages(
       String messageText, Long chatId, LogEntity log, User user) {
-    if (messageText.equals(IS_ADMIN)) {
-      sendMessage(chatId, String.valueOf(bot.isAdmin(user.getUserName())), false, log);
-      return true;
-    }
-    if (messageText.equals(DISPLAY_BOT_DETAILS)) {
-      sendMessage(chatId, bot.display(), false, log);
-      return true;
-    }
-    if (messageText.equals(CHANGE_LANGUAGE)) {
-      localization.changeLocalization();
-      sendMessage(
-          chatId,
-          String.format(localization.getLanguageChanged(), localization.getLocalization()),
-          false,
-          log);
-      return true;
-    }
-    if (isRemoveCommand(messageText)) {
+      switch (messageText) {
+          case IS_ADMIN -> {
+              sendMessage(chatId, String.valueOf(bot.isAdmin(user.getUserName())), false, log);
+              return true;
+          }
+          case DISPLAY_BOT_DETAILS -> {
+              sendMessage(chatId, bot.display(), false, log);
+              return true;
+          }
+          case CHANGE_LANGUAGE -> {
+              localization.changeLocalization();
+              sendMessage(
+                      chatId,
+                      String.format(localization.getLanguageChanged(), localization.getLocalization()),
+                      false,
+                      log);
+              return true;
+          }
+      }
+      if (isRemoveCommand(messageText)) {
       var operationMessage = content.remove(getLongFromString(messageText));
       sendMessage(chatId, operationMessage, false, log);
       return true;

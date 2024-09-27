@@ -12,8 +12,7 @@ public class Utils {
     public static Long calculateResponseTime(LogEntity logEntity) {
         var initialTime = logEntity.getTimestamp();
         var finalizedTime = LocalDateTime.now();
-        long responseTimeInMillis = Duration.between(initialTime, finalizedTime).toMillis();
-        return responseTimeInMillis;
+        return Duration.between(initialTime, finalizedTime).toMillis();
     }
 
 

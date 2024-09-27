@@ -15,10 +15,10 @@ public class Commands {
   // ADMIN
   public static final String REMOVE_CONTENT_COMMAND = "/REMOVE_(\\d+)";
   public static final String DISPLAY_CONTENT_COMMAND = "/DISPLAY_(\\d+)";
-  public static final String EDIT_CONTENT_COMMAND = "/EDIT_(\\d+)_\\[(.*?)\\]";
-  public static final String EDIT_BOT_COMMAND = "/EDIT_BOT_\\[(.*?)\\]";
+  public static final String EDIT_CONTENT_COMMAND = "/EDIT_(\\d+)_\\[(.*?)]";
+  public static final String EDIT_BOT_COMMAND = "/EDIT_BOT_\\[(.*?)]";
 
-  public static final String ADD_CONTENT_COMMAND = "/ADD_\\[.*\\]";
+  public static final String ADD_CONTENT_COMMAND = "/ADD_\\[.*]";
 
   public static Long getLongFromString(String string) {
     return Long.parseLong(string.replaceAll("[^0-9]", ""));
@@ -67,8 +67,7 @@ public class Commands {
     Pattern pattern = Pattern.compile("/ADD_\\[(.*)\\]");
     Matcher matcher = pattern.matcher(message);
     if (matcher.find()) {
-      String payload = matcher.group(1); // Group 2 is the payload
-      return payload;
+      return matcher.group(1);
     } else {
       throw new IllegalArgumentException("Invalid command format.");
     }
@@ -76,8 +75,7 @@ public class Commands {
 
   public static String extractPayloadFromEditRequest(String command) {
     // Regular expression to match the command format
-    String regex = EDIT_CONTENT_COMMAND;
-    Pattern pattern = Pattern.compile(regex);
+    Pattern pattern = Pattern.compile(EDIT_CONTENT_COMMAND);
     Matcher matcher = pattern.matcher(command);
 
     // Check if the command matches the regex
@@ -89,8 +87,7 @@ public class Commands {
   }
   public static String extractPayloadFromEditBotRequest(String command) {
     // Regular expression to match the command format
-    String regex = EDIT_BOT_COMMAND;
-    Pattern pattern = Pattern.compile(regex);
+    Pattern pattern = Pattern.compile(EDIT_BOT_COMMAND);
     Matcher matcher = pattern.matcher(command);
 
     // Check if the command matches the regex
@@ -103,8 +100,7 @@ public class Commands {
 
   public static Long extractIndexFromEditMessage(String command) {
     // Regular expression to match the command format
-    String regex = EDIT_CONTENT_COMMAND;
-    Pattern pattern = Pattern.compile(regex);
+    Pattern pattern = Pattern.compile(EDIT_CONTENT_COMMAND);
     Matcher matcher = pattern.matcher(command);
     // Check if the command matches the regex
     if (matcher.find()) {

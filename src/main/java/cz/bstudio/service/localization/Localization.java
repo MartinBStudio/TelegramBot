@@ -5,10 +5,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Getter
 public class Localization {
 
   @Value("${telegram.bot.localization}")
-  @Getter
+
   private String localization;
 
   public void changeLocalization() {
@@ -64,10 +65,6 @@ public class Localization {
 
   public String getPaymentGuide() {
     return getMessage(Messages.PAYMENT_GUIDE);
-  }
-
-  public String getPickContent() {
-    return getMessage(Messages.PICK_CONTENT);
   }
 
   public String getInvalidRequest() {
