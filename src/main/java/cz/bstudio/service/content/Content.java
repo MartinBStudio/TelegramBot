@@ -107,9 +107,15 @@ public class Content {
 
   public ContentEntity findOwnedById(long id) {
     Optional<ContentEntity> optionalContent = contentRepository.findById(id);
-    if (isOwner(optionalContent.get().getOwner())) {
-      return optionalContent.get();
-    } else {
+    if(optionalContent.isPresent()){
+      var foundContent = optionalContent.get();
+      if (isOwner(foundContent.getOwner())) {
+        return foundContent;
+      } else {
+        return null;
+      }
+    }
+    else{
       return null;
     }
   }
