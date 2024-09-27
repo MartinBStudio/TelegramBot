@@ -82,7 +82,7 @@ public class Content {
   public String buildContentListMessage(String filter ) {
     String message = "";
     List<ContentEntity> content = getData(filter);
-    if (content.size() > 0) {
+    if (!content.isEmpty()) {
       int batchSize = 30; // Maximum number of items per message
       List<List<ContentEntity>> batches = new ArrayList<>();
       // Split the content into batches

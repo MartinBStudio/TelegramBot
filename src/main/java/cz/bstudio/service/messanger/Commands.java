@@ -64,7 +64,7 @@ public class Commands {
 
   public static String extractAddPayload(String message) {
     // Match the number after /ADD_ and the payload inside the square brackets
-    Pattern pattern = Pattern.compile("/ADD_\\[(.*)\\]");
+    Pattern pattern = Pattern.compile("/ADD_\\[(.*)]");
     Matcher matcher = pattern.matcher(message);
     if (matcher.find()) {
       return matcher.group(1);
