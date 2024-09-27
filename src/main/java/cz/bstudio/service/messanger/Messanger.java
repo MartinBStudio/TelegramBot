@@ -183,7 +183,7 @@ public class Messanger extends TelegramLongPollingBot {
       Long chatId, String messageText, boolean disableWebPreview, LogEntity logEntity) {
     logEntity.setBotResponse(messageText);
     if (messageText.isEmpty()) {
-      logger.log(log);
+      logger.log(logEntity);
       return;
     }
     SendMessage message = new SendMessage();
