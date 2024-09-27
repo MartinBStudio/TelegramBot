@@ -180,8 +180,8 @@ public class Messanger extends TelegramLongPollingBot {
   }
 
   private void sendMessage(
-      Long chatId, String messageText, boolean disableWebPreview, LogEntity log) {
-    log.setBotResponse(messageText);
+      Long chatId, String messageText, boolean disableWebPreview, LogEntity logEntity) {
+    logEntity.setBotResponse(messageText);
     if (messageText.isEmpty()) {
       logger.log(log);
       return;
@@ -192,13 +192,14 @@ public class Messanger extends TelegramLongPollingBot {
     message.setDisableWebPagePreview(disableWebPreview);
     try {
       execute(message);
-      log.setResponseTime(calculateResponseTime(log));
-      logger.log(log);
+      logEntity.setResponseTime(calculateResponseTime(logEntity));
+      logger.log(logEntity);
     } catch (TelegramApiException e) {
-      e.printStackTrace();
-      log.setResponseTime(calculateResponseTime(log));
-      log.setTelegramErrorMessage(e.getMessage());
-      logger.log(log);
+      var errorMessage = e.getMessage();
+      log.info(errorMessage);
+      logEntity.setResponseTime(calculateResponseTime(logEntity));
+      logEntity.setTelegramErrorMessage(errorMessage);
+      logger.log(logEntity);
     }
   }
 }
