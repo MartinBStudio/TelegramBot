@@ -27,6 +27,7 @@ public class Logger {
         }
         logRepository.save(logEntity);
     }
+    @Transactional
     public void logErrorMessage(Exception e, LogEntity logEntity){
         logEntity.setErrorMessage(e.getMessage());
         logEntity.setResponseTime(calculateResponseTime(logEntity));
