@@ -3,6 +3,7 @@ package cz.bstudio.service.messanger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
+import org.hibernate.query.sqm.ParsingException;
 
 @Getter
 public class Commands {
@@ -11,19 +12,14 @@ public class Commands {
   public static final String START_COMMAND = "/start";
   public static final String CHANGE_LANGUAGE = "/CHANGE_LANGUAGE";
   public static final String DISPLAY_BOT_DETAILS = "/DISPLAY_BOT";
-  public static final String ALL_COMMAND = "/all";
-  public static final String VIDEO_COMMAND = "/video";
-  public static final String SPECIAL_COMMAND = "/special";
-  public static final String BUNDLE_COMMAND = "/bundle";
-  public static final String PHOTOS_COMMAND = "/photos";
   public static final String NUMBER_COMMAND = "/(\\d+)";
   // ADMIN
   public static final String REMOVE_CONTENT_COMMAND = "/REMOVE_(\\d+)";
   public static final String DISPLAY_CONTENT_COMMAND = "/DISPLAY_(\\d+)";
-  public static final String EDIT_CONTENT_COMMAND = "/EDIT_(\\d+)_\\[(.*?)\\]";
-  public static final String EDIT_BOT_COMMAND = "/EDIT_BOT_\\[(.*?)\\]";
+  public static final String EDIT_CONTENT_COMMAND = "/EDIT_(\\d+)_\\[(.*?)]";
+  public static final String EDIT_BOT_COMMAND = "/EDIT_BOT_\\[(.*?)]";
 
-  public static final String ADD_CONTENT_COMMAND = "/ADD_\\[.*\\]";
+  public static final String ADD_CONTENT_COMMAND = "/ADD_\\[.*]";
 
   public static Long getLongFromString(String string) {
     return Long.parseLong(string.replaceAll("[^0-9]", ""));
@@ -69,11 +65,10 @@ public class Commands {
 
   public static String extractAddPayload(String message) {
     // Match the number after /ADD_ and the payload inside the square brackets
-    Pattern pattern = Pattern.compile("/ADD_\\[(.*)\\]");
+    Pattern pattern = Pattern.compile("/ADD_\\[(.*)]");
     Matcher matcher = pattern.matcher(message);
     if (matcher.find()) {
-      String payload = matcher.group(1); // Group 2 is the payload
-      return payload;
+      return matcher.group(1);
     } else {
       throw new IllegalArgumentException("Invalid command format.");
     }
@@ -81,8 +76,7 @@ public class Commands {
 
   public static String extractPayloadFromEditRequest(String command) {
     // Regular expression to match the command format
-    String regex = EDIT_CONTENT_COMMAND;
-    Pattern pattern = Pattern.compile(regex);
+    Pattern pattern = Pattern.compile(EDIT_CONTENT_COMMAND);
     Matcher matcher = pattern.matcher(command);
 
     // Check if the command matches the regex
@@ -94,8 +88,7 @@ public class Commands {
   }
   public static String extractPayloadFromEditBotRequest(String command) {
     // Regular expression to match the command format
-    String regex = EDIT_BOT_COMMAND;
-    Pattern pattern = Pattern.compile(regex);
+    Pattern pattern = Pattern.compile(EDIT_BOT_COMMAND);
     Matcher matcher = pattern.matcher(command);
 
     // Check if the command matches the regex
@@ -108,14 +101,13 @@ public class Commands {
 
   public static Long extractIndexFromEditMessage(String command) {
     // Regular expression to match the command format
-    String regex = EDIT_CONTENT_COMMAND;
-    Pattern pattern = Pattern.compile(regex);
+    Pattern pattern = Pattern.compile(EDIT_CONTENT_COMMAND);
     Matcher matcher = pattern.matcher(command);
     // Check if the command matches the regex
     if (matcher.find()) {
       // Extract index and payload
       return Long.parseLong(matcher.group(1));
     }
-    return null;
+    throw new ParsingException("Invalid format of edit message. Edit message must be in format /EDIT_27_[..]");
   }
 }

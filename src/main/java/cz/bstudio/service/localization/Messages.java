@@ -3,10 +3,13 @@ package cz.bstudio.service.localization;
 import lombok.Getter;
 
 @Getter
-public enum StaticMessages {
+enum Messages {
   WELCOME(
       "Ahoj, děkujeme ti za zájem o můj obsah.\n\n Celkový počet: %s",
       "Hello, thank you for interest in my content.\n\nTotal amount: %s"),
+  LANGUAGE_CHANGED(
+          "Jazyk bota změněn na -  %s",
+          "Language changed to - %s"),
   CONTENT_TYPES(
       "Vyber si o jaký druh obsahu máš zájem.\n",
       "Choose what type you want to buy.\n"),
@@ -21,7 +24,6 @@ public enum StaticMessages {
   NO_USERNAME_MESSAGE(
       "Děkujeme za zaplacení. Na tvém účtu nemáš vyplněné username, prosím napiš zprávu uživateli @%s a řekni ju co jsi vyplnil do poznámky k platbě, aby mohla platbu ověřit.","Thank you for your payment, please contact @%s and tell her your payment note.She will then provide content for you."),
   PAYMENT_GUIDE("Až budou peníze poslané napiš ","After you send the money please use following command "),
-  PICK_CONTENT("Níže si prosím klikem na číslo vyber požadovaný obsah.","Here, by clicking on index select requested content."),
   NOTIFICATION_DETAILS(
       "Username - %s\nObsah - [%s] %s\nČástka - %sCZK\nPoznámka k platbě - %s\n\n%s",
       "Username - %s\nContent - [%s] %s\nPrice -%s euro\nPayment note - %s\n\n%s"),
@@ -29,15 +31,12 @@ public enum StaticMessages {
       " %s\n\n%s\n DRUH - %s\n POPIS - %s\n CENA - %sCZK\n\nPLATBA\n %s\n %s\n POZNÁMKA K PLATBĚ - %s\n\n%s%s",
       " %s\n\n%s\n TYPE - %s\n DESCRIPTION - %s\n PRICE - %sEURO\n\nPAYMENT\n %s\n %s\n PAYMENT NOTE - %s\n\n%s%s"),
   INVALID_REQUEST(
-      "Této odpovědí nerozumím :(.\n\nVyber si o jaký druh obsahu máš zájem:\n /video - naše amatérská videa\n /photos - naše amatérské fotky\n /special - videa a fotky na přání jen pro tebe\n /bundle - balíčky fotek nebo videí ","I don't understand this message. :(");
+      "Této odpovědí nerozumím :(.\n\nVyber si o jaký druh obsahu máš zájem:\n%s","I don't understand this message.Pick what type of content you like:\n%s");
 
   private final String czechMessage;
   private final String englishMessage;
 
-
-
-
-  StaticMessages(String czechMessage, String englishMessage) {
+  Messages(String czechMessage, String englishMessage) {
     this.czechMessage = czechMessage;
     this.englishMessage = englishMessage;
   }

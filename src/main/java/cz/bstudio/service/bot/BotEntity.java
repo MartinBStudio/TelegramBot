@@ -1,5 +1,6 @@
 package cz.bstudio.service.bot;
 
+import cz.bstudio.service.utils.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cz.bstudio.constants.DbObjects.*;
+import static cz.bstudio.constants.Constants.*;
 
 @Entity
 @Table(name = BOTS_TABLE)
@@ -23,7 +24,6 @@ public class BotEntity {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = BOT_SEQ)
   @SequenceGenerator(name = BOT_SEQ, sequenceName = BOT_SEQ, allocationSize = 1)
   private Long id;
-
   private String botName;
   private String botToken;
   private String sellerName;

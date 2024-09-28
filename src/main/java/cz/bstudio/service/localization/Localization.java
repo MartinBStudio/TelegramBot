@@ -2,13 +2,19 @@ package cz.bstudio.service.localization;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import static cz.bstudio.constants.Constants.TELEGRAM_BOT_LOCALIZATION_ENV_VARIABLE;
+import static cz.bstudio.constants.Constants.TELEGRAM_PROPERTIES_PATH;
+
 @Service
+@Getter
+@PropertySource(TELEGRAM_PROPERTIES_PATH)
 public class Localization {
 
-  @Value("${telegram.bot.localization}")
-  @Getter
+  @Value(TELEGRAM_BOT_LOCALIZATION_ENV_VARIABLE)
+
   private String localization;
 
   public void changeLocalization() {
@@ -20,61 +26,61 @@ public class Localization {
       }
   }
 
-  private String getMessage(StaticMessages message) {
+  private String getMessage(Messages message) {
     return localization.equals("CZE") ? message.getCzechMessage() : message.getEnglishMessage();
   }
 
+
   public String getWelcome() {
-    return getMessage(StaticMessages.WELCOME);
+    return getMessage(Messages.WELCOME);
+  }
+  public String getLanguageChanged() {
+    return getMessage(Messages.LANGUAGE_CHANGED);
   }
   public String getContentTypes() {
-    return getMessage(StaticMessages.CONTENT_TYPES);
+    return getMessage(Messages.CONTENT_TYPES);
   }
 
   public String getContentSelected() {
-    return getMessage(StaticMessages.CONTENT_SELECTED);
+    return getMessage(Messages.CONTENT_SELECTED);
   }
   public String getNoAvailableContent() {
-    return getMessage(StaticMessages.NO_AVAILABLE_CONTENT);
+    return getMessage(Messages.NO_AVAILABLE_CONTENT);
   }
 
   public String getContentOutOfBounds() {
-    return getMessage(StaticMessages.CONTENT_OUT_OF_BOUNDS);
+    return getMessage(Messages.CONTENT_OUT_OF_BOUNDS);
   }
 
   public String getThanks() {
-    return getMessage(StaticMessages.THANKS_MESSAGE);
+    return getMessage(Messages.THANKS_MESSAGE);
   }
 
   public String getContactUser() {
-    return getMessage(StaticMessages.CONTACT_USER);
+    return getMessage(Messages.CONTACT_USER);
   }
 
   public String getUserWillContactYou() {
-    return getMessage(StaticMessages.USER_WILL_CONTACT_YOU);
+    return getMessage(Messages.USER_WILL_CONTACT_YOU);
   }
 
   public String getNoUsername() {
-    return getMessage(StaticMessages.NO_USERNAME_MESSAGE);
+    return getMessage(Messages.NO_USERNAME_MESSAGE);
   }
 
   public String getPaymentGuide() {
-    return getMessage(StaticMessages.PAYMENT_GUIDE);
-  }
-
-  public String getPickContent() {
-    return getMessage(StaticMessages.PICK_CONTENT);
+    return getMessage(Messages.PAYMENT_GUIDE);
   }
 
   public String getInvalidRequest() {
-    return getMessage(StaticMessages.INVALID_REQUEST);
+    return getMessage(Messages.INVALID_REQUEST);
   }
 
   public String getContentDetails() {
-    return getMessage(StaticMessages.CONTENT_DETAILS);
+    return getMessage(Messages.CONTENT_DETAILS);
   }
 
   public String getNotificationDetails() {
-    return getMessage(StaticMessages.NOTIFICATION_DETAILS);
+    return getMessage(Messages.NOTIFICATION_DETAILS);
   }
 }

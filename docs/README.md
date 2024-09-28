@@ -19,7 +19,7 @@ The bot supports a wide range of content and functionalities, including:
 To get the bot up and running, you will need:
 
 - A **Telegram Bot API token**: Create a bot through [BotFather](https://core.telegram.org/bots#botfather).
-- A **Database**: The bot uses a database as its data source for content and logs. Ensure the database is properly configured.
+- A **Database**: The bot uses a Oracle database as its data source for content and logs. Ensure the database is properly configured.
 - **Spring Boot**: The bot is built with Spring Boot and uses several features such as dependency injection, property management, and logging.
 
 ## Setup and Configuration
@@ -29,3 +29,13 @@ To get the bot up and running, you will need:
 ```bash
 git clone https://github.com/MartinBStudio/TelegramBot.git
 cd telegram-bot
+```
+
+### Step 2: Setup Environment Variables
+
+- Configure all necessary environment variables by referring to:
+
+    - `application.properties`
+    - `telegram.properties`
+
+

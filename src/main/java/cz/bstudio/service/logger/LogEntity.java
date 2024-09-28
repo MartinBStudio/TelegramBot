@@ -1,6 +1,6 @@
 package cz.bstudio.service.logger;
 
-import static cz.bstudio.constants.DbObjects.*;
+import static cz.bstudio.constants.Constants.*;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -29,14 +29,14 @@ public class LogEntity {
   private Long chatId;
   private Integer messageId;
   private String message;
-  private Long responseTime;  // response time in milliseconds
+  private Long responseTime;
   private String botResponse;
   private String userLanguage;
   private Boolean isGroupChat;
   private Boolean isAdmin;
   private Boolean isBot;
-  private String errorMessage;  // in case of any errors
-  private String telegramErrorMessage;  // in case of any errors
+  private String errorMessage;
+  private String telegramErrorMessage;
 
   @CreationTimestamp
   @Column(nullable = false, updatable = false)
