@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
-group = 'cz.raadost'
+group = 'cz.bstudio'
 version = '0.0.1'
 
 java {
@@ -24,18 +24,27 @@ repositories {
 }
 
 dependencies {
+	// Spring Boot
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Lombok
 	implementation 'org.projectlombok:lombok:1.18.28'
 	annotationProcessor 'org.projectlombok:lombok:1.18.28'
-	runtimeOnly 'com.h2database:h2'
+
+	// Telegram Bots
 	implementation 'org.telegram:telegrambots-spring-boot-starter:6.7.0'
-	implementation 'javax.xml.bind:jaxb-api:2.3.1'
-	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.oracle.database.jdbc:ojdbc8:19.3.0.0'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Oracle DB Driver
+	implementation 'com.oracle.database.jdbc:ojdbc8:19.15.0.0'
+
+	// Testing
 	testImplementation 'org.testng:testng:7.7.1'
+
+	// JAXB (Javax)
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 }
+
 
 
 test {
