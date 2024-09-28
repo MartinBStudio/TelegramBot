@@ -142,7 +142,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
     if (isNumberCommand(messageText)) {
-      sendMessage(chatId, content.buildSelectedContentMessage(messageText, user), false, log);
+      sendMessage(chatId, content.buildSelectedContentMessage(messageText, user), true, log);
       return true;
     }
     if (isPaidCommand(messageText)) {
