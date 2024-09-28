@@ -9,9 +9,11 @@ import cz.bstudio.service.content.ContentEntity;
 import cz.bstudio.service.localization.Localization;
 import cz.bstudio.service.logger.LogEntity;
 import cz.bstudio.service.logger.Logger;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -23,18 +25,21 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class TelegramBot extends TelegramLongPollingBot {
 
-  private final Content content;
-  private final Bot bot;
-  private final Localization localization;
-  private final Logger logger;
+  protected final Content content;
+  protected final Bot bot;
+  protected final Localization localization;
+  protected final Logger logger;
 
-  @Override
-  public String getBotToken() {
-    return bot.getBotEntity().getBotToken();
+  public TelegramBot(Content content, Bot bot, Localization localization, Logger logger) {
+    super(new DefaultBotOptions(), bot.getBotEntity().getBotToken());
+    this.content = content;
+    this.bot = bot;
+    this.localization = localization;
+    this.logger = logger;
   }
+
 
   @Override
   public String getBotUsername() {
@@ -180,7 +185,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     return message;
   }
 
-  private void sendMessage(Long chatId, String messageText, boolean disableWebPreview, LogEntity logEntity) {
+  protected void sendMessage(Long chatId, String messageText, boolean disableWebPreview, LogEntity logEntity) {
     logEntity.setBotResponse(messageText);
     if (messageText.isEmpty()) {
       logger.log(logEntity);
