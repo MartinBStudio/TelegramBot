@@ -11,13 +11,15 @@ import cz.bstudio.service.logger.LogEntity;
 import cz.bstudio.service.logger.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -136,8 +138,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     for (String type : contentTypes) {
       if (messageText.equals("/" + type)) {
         sendMessage(chatId, content.buildContentListMessage(type), true, log);
+        }
         return true;
-      }
     }
     if (isNumberCommand(messageText)) {
       sendMessage(chatId, content.buildSelectedContentMessage(messageText, user), false, log);
@@ -177,28 +179,51 @@ public class TelegramBot extends TelegramLongPollingBot {
             operatorActionMessage);
     return message;
   }
-
-  private void sendMessage(
-      Long chatId, String messageText, boolean disableWebPreview, LogEntity logEntity) {
+  private static final int TELEGRAM_MESSAGE_LIMIT = 4096;
+  private void sendMessage(Long chatId, String messageText, boolean disableWebPreview, LogEntity logEntity) {
     logEntity.setBotResponse(messageText);
     if (messageText.isEmpty()) {
       logger.log(logEntity);
       return;
     }
-    SendMessage message = new SendMessage();
-    message.setChatId(chatId.toString());
-    message.setText(messageText);
-    message.setDisableWebPagePreview(disableWebPreview);
-    try {
-      execute(message);
-      logEntity.setResponseTime(calculateResponseTime(logEntity));
-      logger.log(logEntity);
-    } catch (TelegramApiException e) {
-      var errorMessage = e.getMessage();
-      log.info(errorMessage);
-      logEntity.setResponseTime(calculateResponseTime(logEntity));
-      logEntity.setTelegramErrorMessage(errorMessage);
-      logger.log(logEntity);
+
+    // Split the message if it exceeds the Telegram limit
+    List<String> messageParts = splitMessage(messageText, TELEGRAM_MESSAGE_LIMIT);
+
+    for (String part : messageParts) {
+      SendMessage message = new SendMessage();
+      message.setChatId(chatId.toString());
+      message.setText(part);
+      message.setDisableWebPagePreview(disableWebPreview);
+      try {
+        execute(message);
+        logEntity.setResponseTime(calculateResponseTime(logEntity));
+        logger.log(logEntity);
+      } catch (TelegramApiException e) {
+        var errorMessage = e.getMessage();
+        log.info(errorMessage);
+        logEntity.setResponseTime(calculateResponseTime(logEntity));
+        logEntity.setTelegramErrorMessage(errorMessage);
+        logger.log(logEntity);
+      }
     }
+  }
+  private List<String> splitMessage(String message, int maxLength) {
+    List<String> messageParts = new ArrayList<>();
+
+    // If the message is shorter than the limit, no need to split
+    if (message.length() <= maxLength) {
+      messageParts.add(message);
+    } else {
+      // Split the message into smaller parts
+      int start = 0;
+      while (start < message.length()) {
+        int end = Math.min(start + maxLength, message.length());
+        messageParts.add(message.substring(start, end));
+        start = end;
+      }
+    }
+
+    return messageParts;
   }
 }
