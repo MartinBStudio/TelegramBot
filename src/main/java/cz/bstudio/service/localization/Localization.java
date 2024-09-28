@@ -2,13 +2,18 @@ package cz.bstudio.service.localization;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+
+import static cz.bstudio.constants.Constants.TELEGRAM_BOT_LOCALIZATION_ENV_VARIABLE;
+import static cz.bstudio.constants.Constants.TELEGRAM_PROPERTIES_PATH;
 
 @Service
 @Getter
+@PropertySource(TELEGRAM_PROPERTIES_PATH)
 public class Localization {
 
-  @Value("${telegram.bot.localization}")
+  @Value(TELEGRAM_BOT_LOCALIZATION_ENV_VARIABLE)
 
   private String localization;
 

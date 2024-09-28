@@ -1,6 +1,6 @@
 package cz.bstudio;
 
-import cz.bstudio.service.messanger.Messanger;
+import cz.bstudio.service.messanger.TelegramBot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -13,21 +13,24 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @RequiredArgsConstructor
 @Slf4j
 public class Application {
-	private final Messanger messanger;
+
+	private final TelegramBot telegramBot;
 
 	public static void main(String[] args) {
 		var context = SpringApplication.run(Application.class, args);
-		Application bot = context.getBean(Application.class);
-		bot.initializeBot();
+		Application botApp = context.getBean(Application.class);
+		botApp.initializeBot();
 	}
 
 	public void initializeBot() {
 		try {
-			var botApi = new TelegramBotsApi(DefaultBotSession.class);
-			botApi.registerBot(messanger);
+			TelegramBotsApi botApi = new TelegramBotsApi(DefaultBotSession.class);
+			botApi.registerBot(telegramBot);
+			log.info("Telegram bot initialized successfully.");
 		} catch (TelegramApiException e) {
-			log.info(e.getMessage());
-			throw new RuntimeException("Failed to initialize Telegram Bots API", e);
+			log.error("Failed to initialize Telegram Bots API: {}", e.getMessage());
+			throw new RuntimeException("Error initializing Telegram Bots API", e);
 		}
 	}
 }
+

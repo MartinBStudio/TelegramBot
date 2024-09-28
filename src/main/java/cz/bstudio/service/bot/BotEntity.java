@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cz.bstudio.constants.DbObjects.*;
+import static cz.bstudio.constants.Constants.*;
 
 @Entity
 @Table(name = BOTS_TABLE)

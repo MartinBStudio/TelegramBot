@@ -1,7 +1,7 @@
 package cz.bstudio.service.content;
 
-import static cz.bstudio.constants.DbObjects.CONTENT_SEQ;
-import static cz.bstudio.constants.DbObjects.CONTENT_TABLE;
+import static cz.bstudio.constants.Constants.CONTENT_SEQ;
+import static cz.bstudio.constants.Constants.CONTENT_TABLE;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -21,9 +21,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
 @Service
-@PropertySource("classpath:telegram.properties")
 @RequiredArgsConstructor
-public class Messanger extends TelegramLongPollingBot {
+public class TelegramBot extends TelegramLongPollingBot {
 
   private final Content content;
   private final Bot bot;

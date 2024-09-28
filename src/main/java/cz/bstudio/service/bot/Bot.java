@@ -1,9 +1,12 @@
 package cz.bstudio.service.bot;
 
 
+import static cz.bstudio.constants.Constants.TELEGRAM_BOT_USERNAME_ENV_VARIABLE;
+import static cz.bstudio.constants.Constants.TELEGRAM_PROPERTIES_PATH;
 import static cz.bstudio.service.utils.Utils.isNotEmpty;
 import static cz.bstudio.service.messanger.Commands.*;
 
+import cz.bstudio.exception.BotNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Map;
@@ -12,19 +15,21 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@PropertySource(TELEGRAM_PROPERTIES_PATH)
 public class Bot {
   private final BotRepository contentRepository;
-  @Value("${telegram.bot.username}")
+  @Value(TELEGRAM_BOT_USERNAME_ENV_VARIABLE)
   private String BOT_USERNAME;
 
   public BotEntity getBotEntity() {
-    Optional<BotEntity> optionalContent = contentRepository.findBotEntityByBotName(BOT_USERNAME);
-    return optionalContent.orElse(null);
+    return contentRepository.findBotEntityByBotName(BOT_USERNAME).orElseThrow(() ->
+            new BotNotFoundException(String.format("Make sure bot with name %s is added to your DB.",BOT_USERNAME)));
   }
   public String display() {
     Optional<BotEntity> optionalContent = contentRepository.findBotEntityByBotName(BOT_USERNAME);

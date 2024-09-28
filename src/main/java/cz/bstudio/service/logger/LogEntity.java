@@ -1,6 +1,6 @@
 package cz.bstudio.service.logger;
 
-import static cz.bstudio.constants.DbObjects.*;
+import static cz.bstudio.constants.Constants.*;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
