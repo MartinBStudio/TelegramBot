@@ -1,6 +1,5 @@
 package cz.bstudio.service.messanger;
 
-import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
