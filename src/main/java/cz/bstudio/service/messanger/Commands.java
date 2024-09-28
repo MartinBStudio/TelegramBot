@@ -1,8 +1,10 @@
 package cz.bstudio.service.messanger;
 
+import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
+import org.hibernate.query.sqm.ParsingException;
 
 @Getter
 public class Commands {
@@ -107,6 +109,6 @@ public class Commands {
       // Extract index and payload
       return Long.parseLong(matcher.group(1));
     }
-    return null;
+    throw new ParsingException("Invalid format of edit message. Edit message must be in format /EDIT_27_[..]");
   }
 }
