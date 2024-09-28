@@ -63,7 +63,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         isUserCommand = handleCustomUserMessages(messageText, chatId, user, logEntity);
 
         if (!isUserCommand && !isAdminCommand) {
-          sendMessage(chatId, localization.getInvalidRequest(), false, logEntity);
+          sendMessage(chatId, String.format(localization.getInvalidRequest(),content.buildContentTypesString()) , false, logEntity);
         }
       }
     } catch (Exception e) {
@@ -122,7 +122,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
   private boolean handleCustomUserMessages(
       String messageText, Long chatId, User user, LogEntity log) {
-    var contentTypes = content.getContentTypes();
     if (messageText.equals(START_COMMAND)) {
       var contentSize = content.getData("").size();
       sendMessage(chatId, String.format(localization.getWelcome(), contentSize), false, log);
@@ -135,11 +134,12 @@ public class TelegramBot extends TelegramLongPollingBot {
           log);
       return true;
     }
+    var contentTypes = content.getContentTypes();
     for (String type : contentTypes) {
       if (messageText.equals("/" + type)) {
         sendMessage(chatId, content.buildContentListMessage(type), true, log);
-        }
         return true;
+        }
     }
     if (isNumberCommand(messageText)) {
       sendMessage(chatId, content.buildSelectedContentMessage(messageText, user), false, log);
@@ -179,7 +179,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             operatorActionMessage);
     return message;
   }
-  private static final int TELEGRAM_MESSAGE_LIMIT = 4096;
+
   private void sendMessage(Long chatId, String messageText, boolean disableWebPreview, LogEntity logEntity) {
     logEntity.setBotResponse(messageText);
     if (messageText.isEmpty()) {
@@ -209,13 +209,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
   }
   private List<String> splitMessage(String message) {
+    final int TELEGRAM_MESSAGE_LIMIT = 4096;
     List<String> messageParts = new ArrayList<>();
-
-    // If the message is shorter than the limit, no need to split
     if (message.length() <= TELEGRAM_MESSAGE_LIMIT) {
       messageParts.add(message);
     } else {
-      // Split the message into smaller parts
       int start = 0;
       while (start < message.length()) {
         int end = Math.min(start + TELEGRAM_MESSAGE_LIMIT, message.length());
@@ -223,7 +221,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         start = end;
       }
     }
-
     return messageParts;
   }
 }

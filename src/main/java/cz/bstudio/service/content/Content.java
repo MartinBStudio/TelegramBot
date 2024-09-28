@@ -184,6 +184,7 @@ public class Content {
     String message;
     var messageNumber = extractLongFromCommand(messageText, NUMBER_COMMAND);
     if (findOwnedById(messageNumber) != null) {
+      log.info("hit");
       message = buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId());
     } else {
       message = localization.getContentOutOfBounds();
