@@ -8,8 +8,6 @@ import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.localization.Localization;
 import jakarta.transaction.Transactional;
 import java.util.*;
-import java.util.function.BiFunction;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -147,11 +145,11 @@ public class Content {
       return "Adding of new content failed, make sure you follow guide properly." + e.getMessage();
     }
   }
-  public String buildContentTypesString(BiFunction<String, String, String> concatenationFunction) {
+  public String buildContentTypesString() {
     var sb = new StringBuilder();
     var contentTypes = getContentTypes();
     for (String type : contentTypes) {
-      sb.append(concatenationFunction.apply("/", type)).append("\n");
+      sb.append("/").append(type).append("\n");
     }
     return sb.toString();
   }
