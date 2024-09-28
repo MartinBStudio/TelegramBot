@@ -4,7 +4,6 @@ import static cz.bstudio.constants.Constants.TELEGRAM_BOT_USERNAME_ENV_VARIABLE;
 import static cz.bstudio.service.messanger.Commands.*;
 import static cz.bstudio.service.utils.Utils.*;
 
-import cz.bstudio.exception.ParsingErrorException;
 import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.localization.Localization;
 import jakarta.transaction.Transactional;
@@ -40,11 +39,9 @@ public class Content {
         ? contentRepository.findByOwner(BOT_USERNAME)
         : contentRepository.findByTypeAndOwner(filter, BOT_USERNAME);
   }
-  @Transactional
   public List<String> getContentTypes(){
     return contentRepository.findDistinctContentTypesByOwner(BOT_USERNAME);
   }
-  @Transactional
   public ContentEntity findOwnedById(long id) {
     Optional<ContentEntity> optionalContent = contentRepository.findById(id);
     if(optionalContent.isPresent()){
@@ -218,7 +215,7 @@ public class Content {
             .description(fields.get(DESCRIPTION_FIELD))
             .previewUrl(fields.get(PREVIEW_URL_FIELD))
             .fullUrl(fields.get(FULL_URL_FIELD))
-            .build();;
+            .build();
     if (fields.get(PRICE_FIELD) != null) {
         contentEntity.setPrice(Integer.parseInt(fields.get(PRICE_FIELD)));
     }

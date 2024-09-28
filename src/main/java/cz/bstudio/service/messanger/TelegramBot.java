@@ -188,7 +188,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     // Split the message if it exceeds the Telegram limit
-    List<String> messageParts = splitMessage(messageText, TELEGRAM_MESSAGE_LIMIT);
+    List<String> messageParts = splitMessage(messageText);
 
     for (String part : messageParts) {
       SendMessage message = new SendMessage();
@@ -208,17 +208,17 @@ public class TelegramBot extends TelegramLongPollingBot {
       }
     }
   }
-  private List<String> splitMessage(String message, int maxLength) {
+  private List<String> splitMessage(String message) {
     List<String> messageParts = new ArrayList<>();
 
     // If the message is shorter than the limit, no need to split
-    if (message.length() <= maxLength) {
+    if (message.length() <= TELEGRAM_MESSAGE_LIMIT) {
       messageParts.add(message);
     } else {
       // Split the message into smaller parts
       int start = 0;
       while (start < message.length()) {
-        int end = Math.min(start + maxLength, message.length());
+        int end = Math.min(start + TELEGRAM_MESSAGE_LIMIT, message.length());
         messageParts.add(message.substring(start, end));
         start = end;
       }
