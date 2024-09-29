@@ -158,8 +158,14 @@ public class Content {
   public BotResponse getSelectedContentResponse(String messageText, User user) {
     var botResponse = BotResponse.builder().build();
     var messageNumber = extractLongFromCommand(messageText, NUMBER_COMMAND);
-      findOwnedById(messageNumber);
-      botResponse.setMessageBody(buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()));
+      var selectedContent =findOwnedById(messageNumber);
+      if(selectedContent!=null){
+      botResponse.setMessageBody(buildContentMessageFromStringIndex(user.getId(),selectedContent));
+      }
+      else{
+        botResponse.setMessageBody(localization.getContentNotAvailable());
+        botResponse.setStatusCode(401);
+      }
       return botResponse;
   }
   public BotResponse getContentListResponse(String filter ) {
@@ -209,11 +215,11 @@ public class Content {
       if (isOwner(foundContent.getOwner())) {
         return foundContent;
       } else {
-        throw new RuntimeException(localization.getContentNotAvailable());
+        return null;
       }
     }
     else{
-      throw new RuntimeException(localization.getContentNotFound());
+      return null;
     }
   }
   private String buildNotificationMessage(ContentEntity data, User user) {
@@ -241,9 +247,8 @@ public class Content {
     }
     return sb.toString();
   }
-  private String buildContentMessageFromStringIndex(String index, Long userId) {
+  private String buildContentMessageFromStringIndex(Long userId,ContentEntity selectedData) {
     var botEntity = bot.getBotEntity();
-    var selectedData = findOwnedById(Long.parseLong(index));
     var contentSelected = localization.getContentSelected();
     var contentName = selectedData.getName();
     var contentType = selectedData.getType();

@@ -18,7 +18,7 @@ enum Messages {
   CONTENT_NOT_FOUND(
       "Obsah nebyl nalezen.","Content not found."),
   CONTENT_NOT_AVAILABLE(
-          "Obsah s není k dispozici.","Content with not available."),
+          "Obsah není k dispozici.","Content not available."),
   THANKS_MESSAGE("Děkujeme za zaplacení. %s platbu ověří a spoji se s tebou na Telegramu.","Thank you for your payment. %s will verify payment and get in touch with you."),
   CONTACT_USER("Ověř platbu a uživatele kontaktuj!","You said he paid, so please contact him !"),
   USER_WILL_CONTACT_YOU(
