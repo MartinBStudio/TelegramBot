@@ -2,10 +2,12 @@ package cz.bstudio.service.content;
 
 import static cz.bstudio.constants.Constants.TELEGRAM_BOT_USERNAME_ENV_VARIABLE;
 import static cz.bstudio.service.messanger.Commands.*;
+import static cz.bstudio.service.messanger.MessageChannels.NOTIFICATION;
 import static cz.bstudio.service.utils.Utils.*;
 
 import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.localization.Localization;
+import cz.bstudio.service.messanger.BotResponse;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -34,63 +36,53 @@ public class Content {
   private String BOT_USERNAME;
 
 
-  public List<ContentEntity> getData(String filter) {
-    return filter.isEmpty()
-        ? contentRepository.findByOwner(BOT_USERNAME)
-        : contentRepository.findByTypeAndOwner(filter, BOT_USERNAME);
-  }
   public List<String> getContentTypes(){
     return contentRepository.findDistinctContentTypesByOwner(BOT_USERNAME);
   }
-  public ContentEntity findOwnedById(long id) {
-    Optional<ContentEntity> optionalContent = contentRepository.findById(id);
-    if(optionalContent.isPresent()){
-      var foundContent = optionalContent.get();
-      if (isOwner(foundContent.getOwner())) {
-        return foundContent;
-      } else {
-        return null;
-      }
-    }
-    else{
-      return null;
-    }
-  }
 
   @Transactional
-  public String remove(Long contentId) {
+  public BotResponse remove(Long contentId) {
     Optional<ContentEntity> contentEntity = contentRepository.findById(contentId);
+    var botResponse = BotResponse.builder().build();
     if (contentEntity.isPresent()) {
       var entityToRemove = contentEntity.get();
       if (isOwner(entityToRemove.getOwner())) {
         contentRepository.delete(entityToRemove);
-        return contentId + " - " + entityToRemove.getName() + " - REMOVED";
+        botResponse.setMessageBody(contentId + " - " + entityToRemove.getName() + " - REMOVED");
       } else {
-        return "You are not owner of this content.";
+        botResponse.setMessageBody(localization.getContentNotAvailable());
+        botResponse.setStatusCode(401);
       }
 
     } else {
-      return "Content with id " + contentId + " not found.";
+      botResponse.setMessageBody(localization.getContentNotFound());
+      botResponse.setStatusCode(404);
     }
+    return botResponse;
   }
-
   @Transactional
-  public String display(Long contentId) {
+  public BotResponse display(Long contentId) {
     Optional<ContentEntity> optionalEntity = contentRepository.findById(contentId);
+    var botResponse = BotResponse.builder().build();
     if (optionalEntity.isPresent()) {
       ContentEntity existingEntity = optionalEntity.get();
       if (isOwner(existingEntity.getOwner())) {
-        return getReadableContentEntity(existingEntity);
+        botResponse.setMessageBody(getReadableContentEntity(existingEntity));
+        return botResponse;
       } else {
-        return "Sorry, but you cannot display content you are not owner.";
+        botResponse.setMessageBody(String.format(localization.getContentNotAvailable(),contentId));
+        botResponse.setStatusCode(401);
+        return botResponse;
       }
     } else {
-      return "Content with id " + contentId + " not found.";
+      botResponse.setMessageBody(String.format(localization.getContentNotFound(),contentId));
+      botResponse.setStatusCode(404);
+      return botResponse;
     }
   }
-
   @Transactional
-  public String edit(String messageText) {
+  public BotResponse edit(String messageText) {
+    var botResponse = BotResponse.builder().build();
     try {
       var contentId = extractIndexFromEditMessage(messageText); // Extracts the ID from the command
       Optional<ContentEntity> contentEntityOptional = contentRepository.findById(contentId);
@@ -122,30 +114,126 @@ public class Content {
           }
           contentRepository.save(existingEntity);
         } else {
-          return "Sorry but you are not owner of" + contentId + "content.";
+          botResponse.setMessageBody(localization.getContentNotAvailable());
+          botResponse.setStatusCode(401);
+          return botResponse;
         }
-        return "Content updated successfully:\n"+getReadableContentEntity(existingEntity);
+        botResponse.setMessageBody("Content updated successfully:\n"+getReadableContentEntity(existingEntity));
+       return botResponse;
       } else {
-        return "Content with ID " + contentId + " not found.";
+        botResponse.setMessageBody(localization.getContentNotFound());
+        botResponse.setStatusCode(404);
+        return botResponse;
       }
     } catch (Exception e) {
-      return "Editing of existing content failed, make sure you follow guide properly.\n\n" + e.getMessage();
+      botResponse.setMessageBody("Editing of existing content failed, make sure you follow guide properly.\n\n" + e.getMessage());
+      botResponse.setStatusCode(500);
+      return botResponse;
     }
   }
-
   @Transactional
-  public String add(String messageText) {
+  public BotResponse add(String messageText) {
+    var botResponse = BotResponse.builder().build();
     try {
       var payload = extractAddPayload(messageText);
       ContentEntity newContentEntity = getContentEntityFromFields(payload);
       newContentEntity.setOwner(BOT_USERNAME);
       var addedContent =contentRepository.save(newContentEntity);
-      return String.format("New content added: ID %s\n %s.",addedContent.getId(),getReadableContentEntity(newContentEntity));
+      botResponse.setMessageBody(String.format("New content added: ID %s\n %s.",addedContent.getId(),getReadableContentEntity(newContentEntity)));
+      return botResponse;
     } catch (Exception e) {
-      return "Adding of new content failed, make sure you follow guide properly." + e.getMessage();
+      botResponse.setMessageBody("Adding of new content failed, make sure you follow guide properly." + e.getMessage());
+      botResponse.setStatusCode(500);
+      return botResponse;
     }
   }
-  public String buildContentTypesString() {
+  public BotResponse getWelcomeResponse(){
+   var contentSize = getData("").size();
+   var welcome = String.format(localization.getWelcome());
+   var message = contentSize > 0
+           ? welcome+localization.getContentTypes() + buildContentTypesString()
+           : welcome+localization.getNoAvailableContent();
+   return BotResponse.builder().messageBody(message).build();
+ }
+  public BotResponse getSelectedContentResponse(String messageText, User user) {
+    var botResponse = BotResponse.builder().build();
+    var messageNumber = extractLongFromCommand(messageText, NUMBER_COMMAND);
+      findOwnedById(messageNumber);
+      botResponse.setMessageBody(buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()));
+      return botResponse;
+  }
+  public BotResponse getContentListResponse(String filter ) {
+    var botResponse = BotResponse.builder().build();
+    StringBuilder sb = new StringBuilder();
+    List<ContentEntity> content = getData(filter);
+    if (!content.isEmpty()) {
+        for (ContentEntity data : content) {
+          sb.append(
+                  String.format("/%s - %s - %s CZK\n", data.getId(), data.getName(), data.getPrice()));
+        }
+    } else {
+      botResponse.setMessageBody(localization.getContentNotFound());
+      botResponse.setStatusCode(404);
+      return botResponse;
+    }
+    botResponse.setMessageBody(sb.toString());
+    return botResponse;
+  }
+  public List<BotResponse> getPaidResponses(String messageText,User user){
+    var requestedData = findOwnedById(extractLongFromCommand(messageText, PAID_COMMAND));
+    var responses = new ArrayList<BotResponse>();
+    if (requestedData != null) {
+      String message =
+              (user.getUserName() == null)
+                      ? String.format(
+                      localization.getNoUsername(), bot.getBotEntity().getAdminUsers().get(0))
+                      : String.format(localization.getThanks(), bot.getBotEntity().getSellerName());
+      var notificationMessage=buildNotificationMessage(requestedData, user);
+      responses.add(BotResponse.builder().messageBody(message).build());
+      responses.add(BotResponse.builder().channel(NOTIFICATION).messageBody(notificationMessage).build());
+    }
+    else{
+      responses.add(BotResponse.builder().messageBody(localization.getContentNotFound()).statusCode(404).build());
+    }
+      return responses;
+  }
+  private List<ContentEntity> getData(String filter) {
+    return filter.isEmpty()
+            ? contentRepository.findByOwner(BOT_USERNAME)
+            : contentRepository.findByTypeAndOwner(filter, BOT_USERNAME);
+  }
+  private ContentEntity findOwnedById(long id) {
+    Optional<ContentEntity> optionalContent = contentRepository.findById(id);
+    if(optionalContent.isPresent()){
+      var foundContent = optionalContent.get();
+      if (isOwner(foundContent.getOwner())) {
+        return foundContent;
+      } else {
+        throw new RuntimeException(localization.getContentNotAvailable());
+      }
+    }
+    else{
+      throw new RuntimeException(localization.getContentNotFound());
+    }
+  }
+  private String buildNotificationMessage(ContentEntity data, User user) {
+    String username = user.getUserName();
+    String message;
+    String usernameDisplay = (username == null) ? "n/a" : "@" + username;
+    var operatorActionMessage =
+            (username == null) ? localization.getUserWillContactYou() : localization.getContactUser();
+    message =
+            String.format(
+                    localization.getNotificationDetails(),
+                    usernameDisplay,
+                    data.getId(),
+                    data.getName(),
+                    data.getPrice(),
+                    user.getId(),
+                    operatorActionMessage);
+    return message;
+  }
+  private String buildContentTypesString() {
     var sb = new StringBuilder();
     var contentTypes = getContentTypes();
     for (String type : contentTypes) {
@@ -153,7 +241,7 @@ public class Content {
     }
     return sb.toString();
   }
-  public String buildContentMessageFromStringIndex(String index, Long userId) {
+  private String buildContentMessageFromStringIndex(String index, Long userId) {
     var botEntity = bot.getBotEntity();
     var selectedData = findOwnedById(Long.parseLong(index));
     var contentSelected = localization.getContentSelected();
@@ -179,30 +267,6 @@ public class Content {
             userId,
             paymentGuide,
             paymentCommand);
-  }
-  public String buildSelectedContentMessage(String messageText, User user) {
-    String message;
-    var messageNumber = extractLongFromCommand(messageText, NUMBER_COMMAND);
-    if (findOwnedById(messageNumber) != null) {
-      log.info("hit");
-      message = buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId());
-    } else {
-      message = localization.getContentOutOfBounds();
-    }
-    return message;
-  }
-  public String buildContentListMessage(String filter ) {
-    StringBuilder sb = new StringBuilder();
-    List<ContentEntity> content = getData(filter);
-    if (!content.isEmpty()) {
-        for (ContentEntity data : content) {
-          sb.append(
-                  String.format("/%s - %s - %s CZK\n", data.getId(), data.getName(), data.getPrice()));
-        }
-    } else {
-      return "No Content found";
-    }
-    return sb.toString();
   }
   private ContentEntity getContentEntityFromFields(String payload) {
     var fields = parsePayload(payload, CONTENT_ENTITY_FIELD, PAYLOAD_FIELDS);

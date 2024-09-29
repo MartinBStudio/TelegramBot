@@ -48,8 +48,11 @@ public class Localization {
     return getMessage(Messages.NO_AVAILABLE_CONTENT);
   }
 
-  public String getContentOutOfBounds() {
-    return getMessage(Messages.CONTENT_OUT_OF_BOUNDS);
+  public String getContentNotFound() {
+    return getMessage(Messages.CONTENT_NOT_FOUND);
+  }
+  public String getContentNotAvailable() {
+    return getMessage(Messages.CONTENT_NOT_AVAILABLE);
   }
 
   public String getThanks() {
