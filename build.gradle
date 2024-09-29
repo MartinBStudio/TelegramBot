@@ -57,7 +57,7 @@ dependencies {
 
 test {
 	useTestNG {
-		suites 'src/test/resources/UnitTestsSuite.xml'
+		suites 'src/test/resources/IntegrationTests.xml'
 	}
 }
 tasks.named('bootJar') {
