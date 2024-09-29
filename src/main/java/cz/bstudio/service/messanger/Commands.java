@@ -30,7 +30,7 @@ public class Commands {
     Matcher matcher = pattern.matcher(input);
 
     if (matcher.find()) {
-      return Long.parseLong(matcher.group(1)); // Group 1 is the number after REMOVE_
+      return Long.parseLong(matcher.group(1));
     }
     throw new IllegalArgumentException("Invalid command format, number not found.");
   }
@@ -55,6 +55,7 @@ public class Commands {
   public static boolean isEditCommand(String messageText) {
     return messageText.matches(EDIT_CONTENT_COMMAND);
   }
+
   public static boolean isUpdateBotDetailsCommand(String messageText) {
     return messageText.matches(EDIT_BOT_COMMAND);
   }
@@ -86,6 +87,7 @@ public class Commands {
     }
     return null;
   }
+
   public static String extractPayloadFromEditBotRequest(String command) {
     // Regular expression to match the command format
     Pattern pattern = Pattern.compile(EDIT_BOT_COMMAND);
@@ -108,6 +110,7 @@ public class Commands {
       // Extract index and payload
       return Long.parseLong(matcher.group(1));
     }
-    throw new ParsingException("Invalid format of edit message. Edit message must be in format /EDIT_27_[..]");
+    throw new ParsingException(
+        "Invalid format of edit message. Edit message must be in format /EDIT_27_[..]");
   }
 }

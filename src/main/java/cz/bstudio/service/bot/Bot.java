@@ -6,10 +6,14 @@ import static cz.bstudio.service.messanger.Commands.*;
 import static cz.bstudio.service.utils.Utils.*;
 
 import cz.bstudio.exception.BotNotFoundException;
+import cz.bstudio.service.localization.Localization;
+import cz.bstudio.service.messanger.BotResponse;
+import cz.bstudio.service.messanger.MessageChannels;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.sqm.ParsingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,13 @@ public class Bot {
   final String PAYMENT_METHOD1_FIELD = "paymentMethod1";
   final String PAYMENT_METHOD2_FIELD = "paymentMethod2";
   final String SELLER_NAME_FIELD = "sellerName";
-  final List<String> PAYLOAD_FIELDS = List.of(SELLER_NAME_FIELD, PAYMENT_METHOD1_FIELD, PAYMENT_METHOD2_FIELD);
+  final List<String> PAYLOAD_FIELDS =
+      List.of(SELLER_NAME_FIELD, PAYMENT_METHOD1_FIELD, PAYMENT_METHOD2_FIELD);
   private final BotRepository contentRepository;
+  private final Localization localization;
 
   @Value(TELEGRAM_BOT_USERNAME_ENV_VARIABLE)
   private String BOT_USERNAME;
-
 
   public BotEntity getBotEntity() {
     return contentRepository
@@ -43,17 +48,12 @@ public class Bot {
 
   @Transactional
   public String display() {
-    Optional<BotEntity> optionalContent = contentRepository.findBotEntityByBotName(BOT_USERNAME);
-    if (optionalContent.isPresent()) {
-      BotEntity botEntity = optionalContent.get();
-      // Create a custom formatted string with only the desired fields
-      return getReadableBotEntity(botEntity);
-    }
-    return "Bot not found";
+      return getReadableBotEntity(getBotEntity());
   }
 
   @Transactional
-  public String edit(String messageText) {
+  public BotResponse edit(String messageText) {
+    var botResponse = BotResponse.builder().build();
     try {
       Optional<BotEntity> optionalBotEntity =
           contentRepository.findBotEntityByBotName(BOT_USERNAME);
@@ -75,21 +75,36 @@ public class Bot {
             existingEntity.setSellerName(newSellerName);
           }
           contentRepository.save(existingEntity);
-          return "Bot details updated successfully:\n" + getReadableBotEntity(existingEntity);
+          botResponse.setMessageBody("Bot details updated successfully:\n" + getReadableBotEntity(existingEntity));
+          return botResponse;
         } else {
-          return "Not enough permissions.";
+          botResponse.setMessageBody(localization.getContentNotAvailable());
+          botResponse.setStatusCode(401);
+          return botResponse;
         }
       } else {
-        return "Bot does not exist.";
+        botResponse.setMessageBody(localization.getContentNotFound());
+        botResponse.setStatusCode(404);
+        return botResponse;
       }
     } catch (Exception e) {
-      return "Editing of bot details failed, make sure you follow guide properly.\n\n"
-          + e.getMessage();
+      botResponse.setMessageBody("Editing of bot details failed, make sure you follow guide properly.\n\n"
+              + e.getMessage());
+      botResponse.setStatusCode(500);
+      return botResponse;
     }
   }
 
   public boolean isAdmin(String userName) {
     return getBotEntity().getAdminUsers().contains(userName);
+  }
+
+  public Long getNotificationChannel()   {
+    try {
+      return Long.parseLong(getBotEntity().getNotificationChannel());
+    } catch (NumberFormatException e) {
+      throw new ParsingException("Failed to parse notification channel to Long.");
+    }
   }
 
   private String getReadableBotEntity(BotEntity botEntity) {

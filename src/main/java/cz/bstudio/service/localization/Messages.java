@@ -5,18 +5,20 @@ import lombok.Getter;
 @Getter
 enum Messages {
   WELCOME(
-      "Ahoj, děkujeme ti za zájem o můj obsah.\n\n Celkový počet: %s",
+      "Ahoj, děkuji ti za zájem o můj obsah.\n",
       "Hello, thank you for interest in my content.\n\nTotal amount: %s"),
   LANGUAGE_CHANGED(
           "Jazyk bota změněn na -  %s",
           "Language changed to - %s"),
   CONTENT_TYPES(
-      "Vyber si o jaký druh obsahu máš zájem.\n",
+      "Vyber si o co máš máš zájem.\n",
       "Choose what type you want to buy.\n"),
   CONTENT_SELECTED("Vybral jsi následující obsah: ","You choose following content:"),
   NO_AVAILABLE_CONTENT("Prodejce bohužel zatím nenahrál žádný obsah. :(","Seller did not add any content yet :(."),
-  CONTENT_OUT_OF_BOUNDS(
-      "Obsah s takovým indexem není k dispozici.","Content with following index is not available."),
+  CONTENT_NOT_FOUND(
+      "Obsah nebyl nalezen.","Content not found."),
+  CONTENT_NOT_AVAILABLE(
+          "Obsah s není k dispozici.","Content with not available."),
   THANKS_MESSAGE("Děkujeme za zaplacení. %s platbu ověří a spoji se s tebou na Telegramu.","Thank you for your payment. %s will verify payment and get in touch with you."),
   CONTACT_USER("Ověř platbu a uživatele kontaktuj!","You said he paid, so please contact him !"),
   USER_WILL_CONTACT_YOU(
@@ -31,7 +33,7 @@ enum Messages {
       " %s\n\n%s\n DRUH - %s\n POPIS - %s\n CENA - %sCZK\n\nPLATBA\n %s\n %s\n POZNÁMKA K PLATBĚ - %s\n\n%s%s",
       " %s\n\n%s\n TYPE - %s\n DESCRIPTION - %s\n PRICE - %sEURO\n\nPAYMENT\n %s\n %s\n PAYMENT NOTE - %s\n\n%s%s"),
   INVALID_REQUEST(
-      "Této odpovědí nerozumím :(.\n\nVyber si o jaký druh obsahu máš zájem:\n%s","I don't understand this message.Pick what type of content you like:\n%s");
+      "Této zprávě nerozumím :(\n","I don't understand this message.\n");
 
   private final String czechMessage;
   private final String englishMessage;
