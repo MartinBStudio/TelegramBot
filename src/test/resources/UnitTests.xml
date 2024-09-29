@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Unit Tests" verbose="1">
-    <test name="Sample Test">
-        <classes>
-            <class name="cz.bstudio.UnitTests"/> <!-- Ensure this matches the package/class -->
-        </classes>
-    </test>
-</suite>
