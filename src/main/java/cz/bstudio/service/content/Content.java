@@ -160,7 +160,7 @@ public class Content {
     var messageNumber = extractLongFromCommand(messageText, NUMBER_COMMAND);
       var selectedContent =findOwnedById(messageNumber);
       if(selectedContent!=null){
-      botResponse.setMessageBody(buildContentMessageFromStringIndex(String.valueOf(messageNumber), user.getId()));
+      botResponse.setMessageBody(buildContentMessageFromStringIndex(user.getId(),selectedContent));
       }
       else{
         botResponse.setMessageBody(localization.getContentNotAvailable());
@@ -247,9 +247,8 @@ public class Content {
     }
     return sb.toString();
   }
-  private String buildContentMessageFromStringIndex(String index, Long userId) {
+  private String buildContentMessageFromStringIndex(Long userId,ContentEntity selectedData) {
     var botEntity = bot.getBotEntity();
-    var selectedData = findOwnedById(Long.parseLong(index));
     var contentSelected = localization.getContentSelected();
     var contentName = selectedData.getName();
     var contentType = selectedData.getType();

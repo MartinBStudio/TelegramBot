@@ -14,7 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -80,14 +79,14 @@ public class IntegrationTests extends AbstractTestNGSpringContextTests {
     User adminUser = createUser(adminUsername);
     message.setFrom(adminUser);
 
-    String id = addEntity("/ADD_[name=unitTest]");
-    assertEntityOperation("/EDIT_" + id + "_[name=unitTest]", 200);
-    assertEntityOperation("/DISPLAY_" + id, 200);
-    assertEntityOperation("/REMOVE_" + id, 200);
+    String id = addEntity();
+    assertEntityOperation("/EDIT_" + id + "_[name=unitTest]" );
+    assertEntityOperation("/DISPLAY_" + id);
+    assertEntityOperation("/REMOVE_" + id );
   }
 
-  private String addEntity(String command) {
-    message.setText(command);
+  private String addEntity() {
+    message.setText("/ADD_[name=unitTest]");
     var response = telegramBot.handleIncomingRequest(update);
     String messageBody = response.getFirst().getMessageBody();
     String id = extractId(messageBody);
@@ -105,10 +104,10 @@ public class IntegrationTests extends AbstractTestNGSpringContextTests {
     }
   }
 
-  private void assertEntityOperation(String command, int expectedStatus) {
+  private void assertEntityOperation(String command ) {
     message.setText(command);
     var response = telegramBot.handleIncomingRequest(update);
-    assertEquals(response.getFirst().getStatusCode(), expectedStatus, "Failed operation for command: " + command);
+    assertEquals(response.getFirst().getStatusCode(), 200, "Failed operation for command: " + command);
   }
 
   @Test
