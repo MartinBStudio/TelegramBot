@@ -38,4 +38,13 @@ cd telegram-bot
     - `application.properties`
     - `telegram.properties`
 
+### Step 3: Add your bot entity to database
+
+- Make sure you set all columns in you BOTS table in DB.
+
+### Step 4:(optional) Integration tests
+
+- If you want use Integration tests you have to create some record in CONTENT table in db and set values in `IntegrationTests.java` properly
+
+
 

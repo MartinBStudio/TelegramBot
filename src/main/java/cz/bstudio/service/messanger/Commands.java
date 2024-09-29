@@ -11,12 +11,9 @@ public class Commands {
   public static final String CHANGE_LANGUAGE = "/CHANGE_LANGUAGE";
   public static final String DISPLAY_BOT_DETAILS = "/DISPLAY_BOT";
   public static final String START_COMMAND = "/start";
-
   public static final String ADD_CONTENT_COMMAND = "/ADD_\\[.*]";
   public static final String DISPLAY_CONTENT_COMMAND = "/DISPLAY_(\\d+)";
   public static final String REMOVE_CONTENT_COMMAND = "/REMOVE_(\\d+)";
-
-  //TODO func tests for these commands
   public static final String PAID_COMMAND = "/ZAPLACENO_(\\d+)";
   public static final String NUMBER_COMMAND = "/(\\d+)";
   public static final String EDIT_CONTENT_COMMAND = "/EDIT_(\\d+)_\\[(.*?)]";

@@ -53,13 +53,6 @@ dependencies {
 
 }
 
-
-
-test {
-	useTestNG {
-		suites 'src/test/resources/IntegrationTests.xml'
-	}
-}
 tasks.named('bootJar') {
 	archiveFileName = 'telegram-content-provider-bot.jar'
 }
