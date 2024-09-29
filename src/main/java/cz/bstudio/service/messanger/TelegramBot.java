@@ -2,6 +2,7 @@ package cz.bstudio.service.messanger;
 
 import static cz.bstudio.service.utils.Utils.calculateResponseTime;
 
+import cz.bstudio.Application;
 import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.logger.LogEntity;
 import cz.bstudio.service.logger.Logger;
@@ -42,8 +43,10 @@ public class TelegramBot extends TelegramLongPollingBot {
     handleIncomingRequest(update);
   }
 
-  private void handleIncomingRequest(Update update) {
+  public LinkedList<BotResponse> handleIncomingRequest(Update update) {
     LogEntity logEntity = logger.createInitialLog(update);
+    var responses = new LinkedList<BotResponse>();
+
     try {
       if (update.hasMessage() && update.getMessage().hasText()) {
         String messageText = update.getMessage().getText();
@@ -55,7 +58,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         LinkedList<BotResponse> messagesToSend = new LinkedList<>();
 
         if (isAdmin) {
-          adminMessagesToSend = messageHandler.handleCustomAdminMessages(messageText, user);
+          adminMessagesToSend = messageHandler.handleCustomAdminMessages(messageText, user.getUserName());
         }
         userMessagesToSend = messageHandler.handleCustomUserMessages(messageText, user);
 
@@ -72,15 +75,18 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         for (BotResponse response : messagesToSend) {
           response.setChatId(chatId);
+          responses.add(response);
           sendMessage(logEntity, response);
         }
       }
     } catch (Exception e) {
       logger.logErrorMessage(e, logEntity);
+      System.out.println(e.getMessage());
     }
+    return responses;
   }
 
-  protected void sendMessage(LogEntity logEntity, BotResponse response) {
+  public void sendMessage(LogEntity logEntity, BotResponse response) {
     long channelToUse =
         switch (response.getChannel()) {
           case USER -> response.getChatId();
@@ -102,7 +108,11 @@ public class TelegramBot extends TelegramLongPollingBot {
       message.setText(part);
       message.setDisableWebPagePreview(disableWebPreview);
       try {
-        execute(message);
+        if (!Application.IS_DEBUG) {
+          {
+            execute(message);
+          }
+        }
         logEntity.setResponseTime(calculateResponseTime(logEntity));
         logger.log(logEntity);
       } catch (TelegramApiException e) {
