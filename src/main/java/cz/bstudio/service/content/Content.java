@@ -273,9 +273,13 @@ public class Content {
     // Check if at least one of the required fields is present directly from the map
     checkLeastOneField(fields);
     // Return the ContentEntity using the map values directly
+    String type = fields.get(TYPE_FIELD);
+    if(type==null){
+      type="Default";
+    }
     var contentEntity = ContentEntity.builder()
             .name(fields.get(NAME_FIELD))
-            .type(fields.get(TYPE_FIELD))
+            .type(type)
             .subType(fields.get(SUB_TYPE_FIELD))
             .description(fields.get(DESCRIPTION_FIELD))
             .previewUrl(fields.get(PREVIEW_URL_FIELD))
