@@ -13,7 +13,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @RequiredArgsConstructor
 @Slf4j
 public class Application {
-
+public static boolean IS_DEBUG = false;
 	private final TelegramBot telegramBot;
 
 	public static void main(String[] args) {

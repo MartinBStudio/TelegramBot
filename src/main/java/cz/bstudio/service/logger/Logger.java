@@ -31,6 +31,7 @@ public class Logger {
     public void logErrorMessage(Exception e, LogEntity logEntity){
         logEntity.setErrorMessage(e.getMessage());
         logEntity.setResponseTime(calculateResponseTime(logEntity));
+        System.out.println(e.getMessage());
         log(logEntity);
     }
     public LogEntity createInitialLog(Update update) {

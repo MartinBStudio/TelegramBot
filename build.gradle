@@ -32,6 +32,10 @@ dependencies {
 	implementation 'org.projectlombok:lombok:1.18.34'
 	annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
+	// Lombok for tests
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
 	// Telegram Bots
 	implementation 'org.telegram:telegrambots-spring-boot-starter:6.9.7.1'
 
@@ -43,6 +47,10 @@ dependencies {
 
 	// JAXB (Javax)
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+	// Mockito
+	testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.14.0'
+
 }
 
 

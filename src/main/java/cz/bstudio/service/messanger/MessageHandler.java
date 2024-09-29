@@ -9,9 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageHandler {
@@ -20,11 +21,11 @@ public class MessageHandler {
     protected final Localization localization;
 
     public LinkedList<BotResponse> handleCustomAdminMessages(
-            String messageText, User user) {
+            String messageText, String username) {
         LinkedList<BotResponse> response = new LinkedList<>();
         switch (messageText) {
             case IS_ADMIN -> {
-                response.add(BotResponse.builder().messageBody(String.valueOf(bot.isAdmin(user.getUserName()))).build());
+                response.add(BotResponse.builder().messageBody(String.valueOf(bot.isAdmin(username))).build());
                 return response;
             }
             case DISPLAY_BOT_DETAILS -> {
