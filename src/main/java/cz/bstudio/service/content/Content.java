@@ -36,9 +36,7 @@ public class Content {
   private String BOT_USERNAME;
 
 
-  public List<String> getContentTypes(){
-    return contentRepository.findDistinctContentTypesByOwner(BOT_USERNAME);
-  }
+
 
   @Transactional
   public BotResponse remove(Long contentId) {
@@ -146,6 +144,9 @@ public class Content {
       botResponse.setStatusCode(500);
       return botResponse;
     }
+  }
+  public List<String> getContentTypes(){
+    return contentRepository.findDistinctContentTypesByOwner(BOT_USERNAME);
   }
   public BotResponse getWelcomeResponse(){
    var contentSize = getData("").size();

@@ -6,7 +6,7 @@ import lombok.Getter;
 enum Messages {
   WELCOME(
       "Ahoj, děkuji ti za zájem o můj obsah.\n",
-      "Hello, thank you for interest in my content.\n\nTotal amount: %s"),
+      "Hello, thank you for interest in my content.\n"),
   LANGUAGE_CHANGED(
           "Jazyk bota změněn na -  %s",
           "Language changed to - %s"),

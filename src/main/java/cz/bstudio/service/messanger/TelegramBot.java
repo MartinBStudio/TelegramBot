@@ -1,6 +1,7 @@
 package cz.bstudio.service.messanger;
 
 import static cz.bstudio.service.utils.Utils.calculateResponseTime;
+import static cz.bstudio.service.utils.Utils.splitMessage;
 
 import cz.bstudio.Application;
 import cz.bstudio.service.bot.Bot;
@@ -114,6 +115,7 @@ public class TelegramBot extends TelegramLongPollingBot {
           }
         }
         logEntity.setResponseTime(calculateResponseTime(logEntity));
+        logEntity.setErrorMessage(String.valueOf(response.getStatusCode()));
         logger.log(logEntity);
       } catch (TelegramApiException e) {
         var errorMessage = e.getMessage();
@@ -125,19 +127,5 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
   }
 
-  private List<String> splitMessage(String message) {
-    final int TELEGRAM_MESSAGE_LIMIT = 4096;
-    List<String> messageParts = new ArrayList<>();
-    if (message.length() <= TELEGRAM_MESSAGE_LIMIT) {
-      messageParts.add(message);
-    } else {
-      int start = 0;
-      while (start < message.length()) {
-        int end = Math.min(start + TELEGRAM_MESSAGE_LIMIT, message.length());
-        messageParts.add(message.substring(start, end));
-        start = end;
-      }
-    }
-    return messageParts;
-  }
+
 }

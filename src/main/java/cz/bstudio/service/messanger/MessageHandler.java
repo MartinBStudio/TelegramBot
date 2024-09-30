@@ -33,6 +33,7 @@ public class MessageHandler {
                 return response;
             }
             case CHANGE_LANGUAGE -> {
+                localization.changeLocalization();
                 response.add(BotResponse.builder().messageBody(String.format(localization.getLanguageChanged(), localization.getLocalization())).build());
                 return response;
             }
