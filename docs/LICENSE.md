@@ -22,4 +22,4 @@ Users of the Software are solely responsible for their actions and the content t
 
 ## 4. Governing Law
 
-This License shall be governed by and construed in accordance with the laws of [Your Jurisdiction].
+This License shall be governed by and construed in accordance with the laws of the Czech Republic.
