@@ -3,8 +3,9 @@ ENV ARTIFACT_NAME=telegram-content-provider-bot.jar
 # Telegram bot environment variables
 ENV TELEGRAM_BOT_USERNAME=your-telegram-bot-username
 ENV TELEGRAM_BOT_LOACALIZATION=localization
-ENV ORACLE_DB_USERNAME=your-db-username
-ENV ORACLE_DB_PASSWORD=your-db-password
+ENV DATABASE_CS=database-connection-string
+ENV DATABASE_PASSWORD=database-password
+ENV DATABASE_USERNAME=database-usernam
 # Set the server port
 ENV SERVER_PORT=5000
 # Copy the jar file from the build/libs directory
