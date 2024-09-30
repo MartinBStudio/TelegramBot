@@ -1,15 +1,17 @@
-package cz.bstudio.service.messanger;
+package cz.bstudio;
 
 import static cz.bstudio.service.utils.Utils.calculateResponseTime;
 import static cz.bstudio.service.utils.Utils.splitMessage;
 
-import cz.bstudio.Application;
 import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.logger.LogEntity;
 import cz.bstudio.service.logger.Logger;
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.List;
+
+import cz.bstudio.service.messanger.model.BotResponse;
+import cz.bstudio.service.messanger.MessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.DefaultBotOptions;

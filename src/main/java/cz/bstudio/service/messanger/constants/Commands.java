@@ -1,4 +1,4 @@
-package cz.bstudio.service.messanger;
+package cz.bstudio.service.messanger.constants;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

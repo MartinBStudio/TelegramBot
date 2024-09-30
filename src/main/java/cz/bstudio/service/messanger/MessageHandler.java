@@ -1,6 +1,6 @@
 package cz.bstudio.service.messanger;
 
-import static cz.bstudio.service.messanger.Commands.*;
+import static cz.bstudio.service.messanger.constants.Commands.*;
 
 import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.content.Content;
@@ -8,6 +8,7 @@ import cz.bstudio.service.localization.Localization;
 import java.util.LinkedList;
 import java.util.List;
 
+import cz.bstudio.service.messanger.model.BotResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
