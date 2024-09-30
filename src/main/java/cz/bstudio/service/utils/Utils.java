@@ -57,6 +57,21 @@ public class Utils {
             throw new ParsingErrorException("Parsing error: At least one required field must be present.");
         }
     }
+    public static List<String> splitMessage(String message) {
+        final int TELEGRAM_MESSAGE_LIMIT = 4096;
+        List<String> messageParts = new ArrayList<>();
+        if (message.length() <= TELEGRAM_MESSAGE_LIMIT) {
+            messageParts.add(message);
+        } else {
+            int start = 0;
+            while (start < message.length()) {
+                int end = Math.min(start + TELEGRAM_MESSAGE_LIMIT, message.length());
+                messageParts.add(message.substring(start, end));
+                start = end;
+            }
+        }
+        return messageParts;
+    }
 
 
 }

@@ -8,7 +8,6 @@ import static cz.bstudio.service.utils.Utils.*;
 import cz.bstudio.exception.BotNotFoundException;
 import cz.bstudio.service.localization.Localization;
 import cz.bstudio.service.messanger.BotResponse;
-import cz.bstudio.service.messanger.MessageChannels;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +29,14 @@ public class Bot {
   final String SELLER_NAME_FIELD = "sellerName";
   final List<String> PAYLOAD_FIELDS =
       List.of(SELLER_NAME_FIELD, PAYMENT_METHOD1_FIELD, PAYMENT_METHOD2_FIELD);
-  private final BotRepository contentRepository;
+  private final BotRepository botRespository;
   private final Localization localization;
 
   @Value(TELEGRAM_BOT_USERNAME_ENV_VARIABLE)
   private String BOT_USERNAME;
 
   public BotEntity getBotEntity() {
-    return contentRepository
+    return botRespository
         .findBotEntityByBotName(BOT_USERNAME)
         .orElseThrow(
             () ->
@@ -56,7 +55,7 @@ public class Bot {
     var botResponse = BotResponse.builder().build();
     try {
       Optional<BotEntity> optionalBotEntity =
-          contentRepository.findBotEntityByBotName(BOT_USERNAME);
+          botRespository.findBotEntityByBotName(BOT_USERNAME);
       if (optionalBotEntity.isPresent()) {
         var existingEntity = optionalBotEntity.get();
         if (existingEntity.getBotName().equals(BOT_USERNAME)) {
@@ -74,7 +73,7 @@ public class Bot {
           if (isNotEmpty(newSellerName)) {
             existingEntity.setSellerName(newSellerName);
           }
-          contentRepository.save(existingEntity);
+          botRespository.save(existingEntity);
           botResponse.setMessageBody("Bot details updated successfully:\n" + getReadableBotEntity(existingEntity));
           return botResponse;
         } else {
