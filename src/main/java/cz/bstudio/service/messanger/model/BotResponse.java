@@ -1,5 +1,6 @@
-package cz.bstudio.service.messanger;
+package cz.bstudio.service.messanger.model;
 
+import cz.bstudio.service.messanger.constants.MessageChannels;
 import lombok.Builder;
 import lombok.Data;
 

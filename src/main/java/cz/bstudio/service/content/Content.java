@@ -1,13 +1,13 @@
 package cz.bstudio.service.content;
 
 import static cz.bstudio.constants.Constants.TELEGRAM_BOT_USERNAME_ENV_VARIABLE;
-import static cz.bstudio.service.messanger.Commands.*;
-import static cz.bstudio.service.messanger.MessageChannels.NOTIFICATION;
+import static cz.bstudio.service.messanger.constants.Commands.*;
+import static cz.bstudio.service.messanger.constants.MessageChannels.NOTIFICATION;
 import static cz.bstudio.service.utils.Utils.*;
 
 import cz.bstudio.service.bot.Bot;
 import cz.bstudio.service.localization.Localization;
-import cz.bstudio.service.messanger.BotResponse;
+import cz.bstudio.service.messanger.model.BotResponse;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.RequiredArgsConstructor;

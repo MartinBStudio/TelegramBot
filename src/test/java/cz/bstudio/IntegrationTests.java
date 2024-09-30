@@ -1,9 +1,8 @@
 package cz.bstudio;
 
-import static cz.bstudio.service.messanger.Commands.*;
+import static cz.bstudio.service.messanger.constants.Commands.*;
 import static org.testng.Assert.*;
 
-import cz.bstudio.service.messanger.TelegramBot;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
